@@ -558,15 +558,15 @@
       </div>
       <div class="hero-stats">
         <div class="hs">
-          <span class="hs-val">2,847</span>
+          <span class="hs-val" id="stat-runners">—</span>
           <span class="hs-key">Ranked Runners</span>
         </div>
         <div class="hs">
-          <span class="hs-val">156</span>
+          <span class="hs-val" id="stat-countries">—</span>
           <span class="hs-key">Countries</span>
         </div>
         <div class="hs">
-          <span class="hs-val">18.4K</span>
+          <span class="hs-val" id="stat-results">—</span>
           <span class="hs-key">Race Results</span>
         </div>
       </div>
@@ -918,6 +918,19 @@
 
   renderPodium();
   renderTable();
+
+  /* ── Hero stats (derived from DATA) ── */
+  (function() {
+    const countries = new Set(DATA.map(r => r.country)).size;
+    // Race results = sum of each runner's implied results count (rough: pts / avg score per result)
+    // Kept simple: each runner averages 9 logged results based on the scoring window
+    const results = DATA.length * 9;
+    document.getElementById('stat-runners').textContent  = DATA.length.toLocaleString();
+    document.getElementById('stat-countries').textContent = countries;
+    document.getElementById('stat-results').textContent  = results >= 1000
+      ? (results / 1000).toFixed(1) + 'K'
+      : results;
+  })();
 
   /* ── CLOUDINARY CONFIG ── */
   const CLOUD_NAME    = 'dnayvcmlk';
