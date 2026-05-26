@@ -1,0 +1,703 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GRI Admin — Submissions</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:      #07070f;
+      --bg2:     #0d0d1c;
+      --bg3:     #131326;
+      --card:    #0f0f20;
+      --card2:   #181832;
+      --border:  #1c1c38;
+      --border2: #272748;
+      --green:   #00e676;
+      --green2:  #00b44e;
+      --orange:  #ff6d35;
+      --red:     #ff3355;
+      --text:    #eeeeff;
+      --text2:   #8080a8;
+      --text3:   #444468;
+      --r:       10px;
+      --rl:      16px;
+    }
+
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* ── LOGIN GATE ──────────────────────── */
+    #loginGate {
+      min-height: 100vh;
+      display: flex; align-items: center; justify-content: center;
+      padding: 24px;
+    }
+    .login-card {
+      background: var(--card); border: 1px solid var(--border2);
+      border-radius: 20px; padding: 40px; width: 100%; max-width: 380px;
+      text-align: center;
+    }
+    .login-logo {
+      width: 48px; height: 48px; border-radius: 12px;
+      background: linear-gradient(135deg, var(--green), var(--green2));
+      display: flex; align-items: center; justify-content: center;
+      font-weight: 900; font-size: 16px; color: #000;
+      margin: 0 auto 20px;
+    }
+    .login-card h1 { font-size: 20px; font-weight: 800; margin-bottom: 6px; }
+    .login-card p  { font-size: 13px; color: var(--text2); margin-bottom: 28px; }
+    .login-field { text-align: left; margin-bottom: 16px; }
+    .login-field label { display: block; font-size: 12px; font-weight: 600; color: var(--text2); margin-bottom: 6px; }
+    .login-field input {
+      width: 100%; background: var(--bg3); border: 1px solid var(--border2);
+      color: var(--text); font-family: inherit; font-size: 15px;
+      padding: 11px 14px; border-radius: var(--r); outline: none;
+      transition: border-color .2s; letter-spacing: 2px;
+    }
+    .login-field input:focus { border-color: var(--green); }
+    .login-btn {
+      width: 100%; padding: 12px; margin-top: 4px;
+      background: var(--green); color: #000;
+      border: none; border-radius: var(--r);
+      font-family: inherit; font-size: 15px; font-weight: 800;
+      cursor: pointer; transition: background .15s;
+    }
+    .login-btn:hover { background: #22ff88; }
+    .login-error {
+      margin-top: 12px; padding: 10px 14px;
+      background: rgba(255,51,85,.1); border: 1px solid rgba(255,51,85,.25);
+      border-radius: var(--r); font-size: 13px; color: var(--red);
+      display: none;
+    }
+
+    /* ── ADMIN SHELL ─────────────────────── */
+    #adminShell { display: none; }
+
+    header {
+      position: sticky; top: 0; z-index: 100;
+      height: 62px;
+      background: rgba(7,7,15,0.9);
+      backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+      border-bottom: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 32px;
+    }
+    .hd-left { display: flex; align-items: center; gap: 12px; }
+    .logo-mark {
+      width: 36px; height: 36px; border-radius: 8px;
+      background: linear-gradient(135deg, var(--green), var(--green2));
+      display: flex; align-items: center; justify-content: center;
+      font-weight: 900; font-size: 12px; color: #000;
+    }
+    .hd-title { font-size: 15px; font-weight: 700; }
+    .hd-badge {
+      font-size: 10px; font-weight: 700; letter-spacing: 1px;
+      text-transform: uppercase; padding: 3px 9px; border-radius: 20px;
+      background: rgba(255,109,53,.12); color: var(--orange);
+      border: 1px solid rgba(255,109,53,.25);
+    }
+    .hd-right { display: flex; align-items: center; gap: 12px; }
+    .hd-link {
+      font-size: 13px; color: var(--text2); text-decoration: none;
+      padding: 6px 12px; border-radius: 7px; transition: color .15s, background .15s;
+    }
+    .hd-link:hover { color: var(--text); background: var(--bg3); }
+    .logout-btn {
+      font-size: 13px; color: var(--text2); background: var(--bg3);
+      border: 1px solid var(--border2); border-radius: 7px;
+      padding: 6px 12px; cursor: pointer; font-family: inherit;
+      transition: color .15s;
+    }
+    .logout-btn:hover { color: var(--red); border-color: rgba(255,51,85,.3); }
+
+    /* ── DASHBOARD ───────────────────────── */
+    .dash { max-width: 1180px; margin: 0 auto; padding: 32px; }
+
+    .stat-row {
+      display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px;
+      margin-bottom: 28px;
+    }
+    .stat-card {
+      background: var(--card); border: 1px solid var(--border);
+      border-radius: var(--rl); padding: 20px;
+    }
+    .sc-val  { font-size: 28px; font-weight: 900; letter-spacing: -0.5px; }
+    .sc-key  { font-size: 11px; color: var(--text2); text-transform: uppercase; letter-spacing: 0.7px; margin-top: 4px; }
+    .sc-all    .sc-val { color: var(--text); }
+    .sc-pend   .sc-val { color: var(--orange); }
+    .sc-appr   .sc-val { color: var(--green); }
+    .sc-rej    .sc-val { color: var(--red); }
+
+    /* ── TOOLBAR ─────────────────────────── */
+    .toolbar {
+      display: flex; align-items: center; gap: 10px;
+      margin-bottom: 16px; flex-wrap: wrap;
+    }
+    .search-box {
+      flex: 1; min-width: 200px; max-width: 280px;
+      background: var(--card); border: 1px solid var(--border2);
+      border-radius: var(--r);
+      display: flex; align-items: center; gap: 8px; padding: 0 12px;
+      transition: border-color .2s;
+    }
+    .search-box:focus-within { border-color: var(--green); }
+    .search-box svg { color: var(--text3); flex-shrink: 0; }
+    .search-box input {
+      flex: 1; background: transparent; border: none; outline: none;
+      color: var(--text); font-family: inherit; font-size: 14px; padding: 9px 0;
+    }
+    .search-box input::placeholder { color: var(--text3); }
+    .fgroup {
+      display: flex; gap: 2px;
+      background: var(--card); border: 1px solid var(--border2);
+      border-radius: var(--r); padding: 3px;
+    }
+    .fbtn {
+      background: transparent; border: none; cursor: pointer;
+      color: var(--text2); font-family: inherit; font-size: 13px; font-weight: 500;
+      padding: 5px 12px; border-radius: 7px; transition: all .14s;
+    }
+    .fbtn:hover { color: var(--text); background: var(--bg3); }
+    .fbtn.on    { background: var(--green); color: #000; font-weight: 700; }
+    .fbtn.on-pend { background: var(--orange); color: #fff; font-weight: 700; }
+    .fbtn.on-appr { background: var(--green); color: #000; font-weight: 700; }
+    .fbtn.on-rej  { background: var(--red);   color: #fff; font-weight: 700; }
+
+    .export-btn {
+      margin-left: auto;
+      background: var(--bg3); border: 1px solid var(--border2);
+      color: var(--text2); font-family: inherit; font-size: 13px; font-weight: 600;
+      padding: 7px 14px; border-radius: var(--r); cursor: pointer;
+      display: flex; align-items: center; gap: 6px;
+      transition: color .15s, border-color .15s;
+    }
+    .export-btn:hover { color: var(--green); border-color: rgba(0,230,118,.3); }
+
+    /* ── TABLE ───────────────────────────── */
+    .tshell {
+      border: 1px solid var(--border); border-radius: var(--rl);
+      overflow: hidden;
+    }
+    table { width: 100%; border-collapse: collapse; }
+    thead { background: var(--bg3); border-bottom: 1px solid var(--border2); }
+    th {
+      padding: 11px 14px;
+      font-size: 11px; font-weight: 600; color: var(--text2);
+      text-transform: uppercase; letter-spacing: 0.8px; text-align: left;
+      white-space: nowrap;
+    }
+    th.tc { text-align: center; }
+    tbody tr { border-bottom: 1px solid var(--border); transition: background .1s; }
+    tbody tr:last-child { border-bottom: none; }
+    tbody tr:hover { background: var(--card2); }
+    td { padding: 14px 14px; font-size: 13px; vertical-align: top; }
+
+    .runner-td { display: flex; flex-direction: column; gap: 2px; }
+    .runner-td strong { font-size: 14px; font-weight: 700; }
+    .runner-td span   { font-size: 12px; color: var(--text2); }
+
+    .race-td { display: flex; flex-direction: column; gap: 2px; }
+    .race-td strong { font-weight: 600; }
+    .race-td span   { font-size: 12px; color: var(--text2); }
+
+    .badge {
+      display: inline-block; font-size: 9px; font-weight: 700; letter-spacing: .5px;
+      padding: 2px 7px; border-radius: 4px; text-transform: uppercase;
+    }
+    .bd-dist { background: var(--bg3); color: var(--text2); border: 1px solid var(--border2); }
+
+    .status-badge {
+      display: inline-flex; align-items: center; gap: 4px;
+      font-size: 11px; font-weight: 700; padding: 4px 10px; border-radius: 20px;
+      text-transform: uppercase; letter-spacing: 0.5px;
+    }
+    .st-pending  { color: var(--orange); background: rgba(255,109,53,.1); border: 1px solid rgba(255,109,53,.2); }
+    .st-approved { color: var(--green);  background: rgba(0,230,118,.1); border: 1px solid rgba(0,230,118,.2); }
+    .st-rejected { color: var(--red);    background: rgba(255,51,85,.1); border: 1px solid rgba(255,51,85,.2); }
+
+    .actions { display: flex; gap: 6px; flex-wrap: wrap; }
+    .act-btn {
+      font-size: 12px; font-weight: 600; padding: 5px 12px; border-radius: 7px;
+      border: 1px solid; cursor: pointer; font-family: inherit;
+      transition: all .14s; white-space: nowrap;
+    }
+    .act-approve {
+      color: var(--green); background: rgba(0,230,118,.08);
+      border-color: rgba(0,230,118,.2);
+    }
+    .act-approve:hover { background: rgba(0,230,118,.18); }
+    .act-reject {
+      color: var(--red); background: rgba(255,51,85,.08);
+      border-color: rgba(255,51,85,.2);
+    }
+    .act-reject:hover { background: rgba(255,51,85,.18); }
+    .act-view {
+      color: var(--text2); background: var(--bg3);
+      border-color: var(--border2);
+    }
+    .act-view:hover { color: var(--text); border-color: var(--border2); }
+    .act-delete {
+      color: var(--text3); background: transparent;
+      border-color: transparent;
+    }
+    .act-delete:hover { color: var(--red); }
+
+    .empty-state { padding: 60px; text-align: center; color: var(--text2); }
+    .empty-state p { margin-top: 8px; font-size: 13px; }
+
+    /* ── IMAGE LIGHTBOX ──────────────────── */
+    #lightbox {
+      position: fixed; inset: 0; z-index: 500;
+      background: rgba(0,0,0,.9); backdrop-filter: blur(6px);
+      display: flex; align-items: center; justify-content: center;
+      padding: 24px;
+      opacity: 0; pointer-events: none; transition: opacity .2s;
+    }
+    #lightbox.open { opacity: 1; pointer-events: all; }
+    #lightbox img { max-width: 100%; max-height: 85vh; border-radius: 12px; object-fit: contain; }
+    .lb-close {
+      position: fixed; top: 20px; right: 20px;
+      width: 40px; height: 40px; border-radius: 50%;
+      background: rgba(255,255,255,.1); color: #fff;
+      border: 1px solid rgba(255,255,255,.2); font-size: 20px;
+      cursor: pointer; display: flex; align-items: center; justify-content: center;
+    }
+    .lb-close:hover { background: rgba(255,255,255,.2); }
+
+    /* ── DETAIL DRAWER ───────────────────── */
+    #drawer {
+      position: fixed; top: 0; right: 0; bottom: 0; z-index: 400;
+      width: 440px; max-width: 100%;
+      background: #0c0c1e; border-left: 1px solid var(--border2);
+      overflow-y: auto; padding: 0;
+      transform: translateX(100%); transition: transform .25s;
+    }
+    #drawer.open { transform: none; }
+    .drawer-header {
+      position: sticky; top: 0; z-index: 10;
+      background: #0c0c1e; border-bottom: 1px solid var(--border);
+      padding: 18px 20px;
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .drawer-header h3 { font-size: 15px; font-weight: 700; }
+    .drawer-close {
+      background: var(--bg3); border: 1px solid var(--border);
+      color: var(--text2); width: 30px; height: 30px; border-radius: 7px;
+      font-size: 16px; cursor: pointer; display: flex;
+      align-items: center; justify-content: center;
+    }
+    .drawer-body { padding: 20px; }
+    .drawer-proof {
+      width: 100%; border-radius: 10px; object-fit: cover;
+      border: 1px solid var(--border2); margin-bottom: 20px; cursor: zoom-in;
+    }
+    .drawer-field { margin-bottom: 14px; }
+    .df-label { font-size: 10px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; color: var(--text3); margin-bottom: 4px; }
+    .df-val   { font-size: 14px; color: var(--text); }
+    .df-val a { color: var(--green); text-decoration: none; }
+    .df-val a:hover { text-decoration: underline; }
+    .drawer-divider { border: none; border-top: 1px solid var(--border); margin: 16px 0; }
+    .drawer-actions { display: flex; flex-direction: column; gap: 8px; }
+    .da-btn {
+      width: 100%; padding: 11px; border-radius: var(--r);
+      font-family: inherit; font-size: 14px; font-weight: 700;
+      cursor: pointer; border: 1px solid; transition: all .15s;
+    }
+    .da-approve {
+      background: rgba(0,230,118,.1); color: var(--green); border-color: rgba(0,230,118,.25);
+    }
+    .da-approve:hover { background: rgba(0,230,118,.2); }
+    .da-reject {
+      background: rgba(255,51,85,.1); color: var(--red); border-color: rgba(255,51,85,.25);
+    }
+    .da-reject:hover { background: rgba(255,51,85,.2); }
+    .da-delete {
+      background: transparent; color: var(--text3); border-color: var(--border);
+    }
+    .da-delete:hover { color: var(--red); border-color: rgba(255,51,85,.3); }
+
+    footer {
+      border-top: 1px solid var(--border);
+      padding: 20px 32px; text-align: center;
+      color: var(--text3); font-size: 12px;
+    }
+
+    @media (max-width: 720px) {
+      header { padding: 0 16px; }
+      .dash  { padding: 20px 16px; }
+      .stat-row { grid-template-columns: 1fr 1fr; }
+      #drawer { width: 100%; }
+      .hide-sm { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ── LOGIN GATE ─────────────────────────────────────── -->
+<div id="loginGate">
+  <div class="login-card">
+    <div class="login-logo">GRI</div>
+    <h1>Admin Access</h1>
+    <p>Enter your password to manage submitted results.</p>
+    <div class="login-field">
+      <label>Password</label>
+      <input type="password" id="passInput" placeholder="••••••••" autocomplete="current-password">
+    </div>
+    <button class="login-btn" id="loginBtn">Sign In</button>
+    <div class="login-error" id="loginError">Incorrect password. Try again.</div>
+  </div>
+</div>
+
+<!-- ── ADMIN SHELL ─────────────────────────────────────── -->
+<div id="adminShell">
+  <header>
+    <div class="hd-left">
+      <div class="logo-mark">GRI</div>
+      <span class="hd-title">Admin</span>
+      <span class="hd-badge">Internal</span>
+    </div>
+    <div class="hd-right">
+      <a href="index.html" class="hd-link">&#8592; Public Site</a>
+      <button class="logout-btn" id="logoutBtn">Sign Out</button>
+    </div>
+  </header>
+
+  <div class="dash">
+
+    <!-- Stat cards -->
+    <div class="stat-row">
+      <div class="stat-card sc-all">
+        <div class="sc-val" id="stat-all">0</div>
+        <div class="sc-key">Total Submissions</div>
+      </div>
+      <div class="stat-card sc-pend">
+        <div class="sc-val" id="stat-pend">0</div>
+        <div class="sc-key">Pending Review</div>
+      </div>
+      <div class="stat-card sc-appr">
+        <div class="sc-val" id="stat-appr">0</div>
+        <div class="sc-key">Approved</div>
+      </div>
+      <div class="stat-card sc-rej">
+        <div class="sc-val" id="stat-rej">0</div>
+        <div class="sc-key">Rejected</div>
+      </div>
+    </div>
+
+    <!-- Toolbar -->
+    <div class="toolbar">
+      <div class="search-box">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round">
+          <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+        </svg>
+        <input type="search" id="adminSearch" placeholder="Search by name, race, country…">
+      </div>
+
+      <div class="fgroup" id="statusF">
+        <button class="fbtn on" data-v="all">All</button>
+        <button class="fbtn" data-v="pending"  style="--c:var(--orange)">Pending</button>
+        <button class="fbtn" data-v="approved" style="--c:var(--green)">Approved</button>
+        <button class="fbtn" data-v="rejected" style="--c:var(--red)">Rejected</button>
+      </div>
+
+      <button class="export-btn" id="exportBtn">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round">
+          <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/>
+        </svg>
+        Export CSV
+      </button>
+    </div>
+
+    <!-- Table -->
+    <div class="tshell">
+      <table>
+        <thead>
+          <tr>
+            <th>Runner</th>
+            <th class="hide-sm">Race</th>
+            <th class="hide-sm">Distance</th>
+            <th class="hide-sm">Result</th>
+            <th>Status</th>
+            <th>Submitted</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody id="adminTbody"></tbody>
+      </table>
+    </div>
+
+  </div>
+
+  <footer>&copy; 2026 Global Runner Index &mdash; Admin Panel &mdash; Internal use only</footer>
+</div>
+
+<!-- ── IMAGE LIGHTBOX ─────────────────────────────────── -->
+<div id="lightbox">
+  <button class="lb-close" id="lbClose">&times;</button>
+  <img id="lbImg" src="" alt="Proof image">
+</div>
+
+<!-- ── DETAIL DRAWER ──────────────────────────────────── -->
+<div id="drawer">
+  <div class="drawer-header">
+    <h3 id="drawerTitle">Submission Detail</h3>
+    <button class="drawer-close" id="drawerClose">&times;</button>
+  </div>
+  <div class="drawer-body" id="drawerBody"></div>
+</div>
+
+<script>
+  /* ── Auth ── */
+  const ADMIN_PASS = 'GRI2026';
+  const authed = sessionStorage.getItem('gri_admin');
+
+  function showAdmin() {
+    document.getElementById('loginGate').style.display  = 'none';
+    document.getElementById('adminShell').style.display = 'block';
+    loadData();
+  }
+
+  if (authed === '1') showAdmin();
+
+  document.getElementById('loginBtn').addEventListener('click', tryLogin);
+  document.getElementById('passInput').addEventListener('keydown', e => {
+    if (e.key === 'Enter') tryLogin();
+  });
+
+  function tryLogin() {
+    const val = document.getElementById('passInput').value;
+    if (val === ADMIN_PASS) {
+      sessionStorage.setItem('gri_admin', '1');
+      showAdmin();
+    } else {
+      document.getElementById('loginError').style.display = 'block';
+      document.getElementById('passInput').value = '';
+      document.getElementById('passInput').focus();
+    }
+  }
+
+  document.getElementById('logoutBtn').addEventListener('click', () => {
+    sessionStorage.removeItem('gri_admin');
+    location.reload();
+  });
+
+  /* ── Data ── */
+  let submissions = [];
+  let statusFilter = 'all';
+  let searchQuery  = '';
+
+  function loadData() {
+    submissions = JSON.parse(localStorage.getItem('gri_submissions') || '[]');
+    renderStats();
+    renderTable();
+  }
+
+  function saveData() {
+    localStorage.setItem('gri_submissions', JSON.stringify(submissions));
+    renderStats();
+    renderTable();
+  }
+
+  function renderStats() {
+    const pend = submissions.filter(s => s.status === 'pending').length;
+    const appr = submissions.filter(s => s.status === 'approved').length;
+    const rej  = submissions.filter(s => s.status === 'rejected').length;
+    document.getElementById('stat-all').textContent  = submissions.length;
+    document.getElementById('stat-pend').textContent = pend;
+    document.getElementById('stat-appr').textContent = appr;
+    document.getElementById('stat-rej').textContent  = rej;
+  }
+
+  function fmtDate(iso) {
+    if (!iso) return '—';
+    const d = new Date(iso);
+    return d.toLocaleDateString('en-GB', { day:'2-digit', month:'short', year:'numeric' });
+  }
+
+  function statusBadge(s) {
+    if (s === 'approved') return `<span class="status-badge st-approved">&#10003; Approved</span>`;
+    if (s === 'rejected') return `<span class="status-badge st-rejected">&#10007; Rejected</span>`;
+    return `<span class="status-badge st-pending">&#9679; Pending</span>`;
+  }
+
+  function renderTable() {
+    const q = searchQuery.toLowerCase();
+    const filtered = submissions.filter(s => {
+      const matchStatus = statusFilter === 'all' || s.status === statusFilter;
+      const matchSearch = !q ||
+        (s.runnerName || '').toLowerCase().includes(q) ||
+        (s.raceName   || '').toLowerCase().includes(q) ||
+        (s.country    || '').toLowerCase().includes(q) ||
+        (s.email      || '').toLowerCase().includes(q);
+      return matchStatus && matchSearch;
+    });
+
+    const tbody = document.getElementById('adminTbody');
+    if (!filtered.length) {
+      tbody.innerHTML = `<tr><td colspan="7"><div class="empty-state">
+        <strong>No submissions found</strong>
+        <p>Try changing the filter or search query.</p>
+      </div></td></tr>`;
+      return;
+    }
+
+    tbody.innerHTML = filtered.map(s => `
+      <tr>
+        <td>
+          <div class="runner-td">
+            <strong>${esc(s.runnerName)}</strong>
+            <span>${esc(s.country)} &middot; ${s.gender}</span>
+            <span style="font-size:11px;color:var(--text3)">${esc(s.email)}</span>
+          </div>
+        </td>
+        <td class="hide-sm">
+          <div class="race-td">
+            <strong>${esc(s.raceName)}</strong>
+            <span>${fmtDate(s.raceDate)}</span>
+          </div>
+        </td>
+        <td class="hide-sm"><span class="badge bd-dist">${esc(s.distance)}</span></td>
+        <td class="hide-sm" style="font-size:13px">
+          #${esc(s.position)} of ${Number(s.participants).toLocaleString()}
+        </td>
+        <td>${statusBadge(s.status)}</td>
+        <td style="font-size:12px;color:var(--text2);white-space:nowrap">${fmtDate(s.submittedAt)}</td>
+        <td>
+          <div class="actions">
+            <button class="act-btn act-view"    onclick="openDrawer('${s.id}')">View</button>
+            ${s.status !== 'approved' ? `<button class="act-btn act-approve" onclick="setStatus('${s.id}','approved')">Approve</button>` : ''}
+            ${s.status !== 'rejected' ? `<button class="act-btn act-reject"  onclick="setStatus('${s.id}','rejected')">Reject</button>`  : ''}
+            <button class="act-btn act-delete"  onclick="deleteEntry('${s.id}')">&#128465;</button>
+          </div>
+        </td>
+      </tr>
+    `).join('');
+  }
+
+  function setStatus(id, status) {
+    const s = submissions.find(x => x.id === id);
+    if (!s) return;
+    s.status = status;
+    saveData();
+    if (currentDrawerId === id) openDrawer(id);
+  }
+
+  function deleteEntry(id) {
+    if (!confirm('Delete this submission? This cannot be undone.')) return;
+    submissions = submissions.filter(x => x.id !== id);
+    saveData();
+    if (currentDrawerId === id) closeDrawer();
+  }
+
+  /* ── Filter/search wiring ── */
+  document.getElementById('statusF').addEventListener('click', e => {
+    const b = e.target.closest('.fbtn');
+    if (!b) return;
+    document.querySelectorAll('#statusF .fbtn').forEach(x => x.classList.remove('on'));
+    b.classList.add('on');
+    statusFilter = b.dataset.v;
+    renderTable();
+  });
+
+  document.getElementById('adminSearch').addEventListener('input', e => {
+    searchQuery = e.target.value;
+    renderTable();
+  });
+
+  /* ── Export CSV ── */
+  document.getElementById('exportBtn').addEventListener('click', () => {
+    const cols = ['id','submittedAt','status','runnerName','gender','country','email',
+                  'raceName','raceDate','distance','participants','position','resultsUrl'];
+    const rows = [cols.join(',')];
+    submissions.forEach(s => {
+      rows.push(cols.map(c => JSON.stringify(s[c] || '')).join(','));
+    });
+    const blob = new Blob([rows.join('\n')], { type: 'text/csv' });
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = 'gri-submissions-' + new Date().toISOString().slice(0,10) + '.csv';
+    a.click();
+  });
+
+  /* ── Lightbox ── */
+  const lightbox = document.getElementById('lightbox');
+  const lbImg    = document.getElementById('lbImg');
+  document.getElementById('lbClose').addEventListener('click', () => lightbox.classList.remove('open'));
+  lightbox.addEventListener('click', e => { if (e.target === lightbox) lightbox.classList.remove('open'); });
+
+  function openLightbox(src) {
+    lbImg.src = src;
+    lightbox.classList.add('open');
+  }
+
+  /* ── Detail Drawer ── */
+  let currentDrawerId = null;
+  const drawer = document.getElementById('drawer');
+
+  function openDrawer(id) {
+    const s = submissions.find(x => x.id === id);
+    if (!s) return;
+    currentDrawerId = id;
+
+    document.getElementById('drawerTitle').textContent = s.runnerName || 'Submission';
+    document.getElementById('drawerBody').innerHTML = `
+      ${s.proofImageUrl
+        ? `<img class="drawer-proof" src="${esc(s.proofImageUrl)}" alt="Proof" onclick="openLightbox('${esc(s.proofImageUrl)}')">`
+        : '<p style="color:var(--text3);margin-bottom:16px;font-size:13px">No image uploaded.</p>'}
+      <div class="drawer-field"><div class="df-label">Status</div><div class="df-val">${statusBadge(s.status)}</div></div>
+      <hr class="drawer-divider">
+      <div class="drawer-field"><div class="df-label">Runner Name</div><div class="df-val">${esc(s.runnerName)}</div></div>
+      <div class="drawer-field"><div class="df-label">Gender</div><div class="df-val">${esc(s.gender)}</div></div>
+      <div class="drawer-field"><div class="df-label">Country</div><div class="df-val">${esc(s.country)}</div></div>
+      <div class="drawer-field"><div class="df-label">Email</div><div class="df-val">${esc(s.email)}</div></div>
+      <hr class="drawer-divider">
+      <div class="drawer-field"><div class="df-label">Race Name</div><div class="df-val">${esc(s.raceName)}</div></div>
+      <div class="drawer-field"><div class="df-label">Race Date</div><div class="df-val">${fmtDate(s.raceDate)}</div></div>
+      <div class="drawer-field"><div class="df-label">Distance</div><div class="df-val">${esc(s.distance)}</div></div>
+      <div class="drawer-field"><div class="df-label">Participants</div><div class="df-val">${Number(s.participants).toLocaleString()}</div></div>
+      <div class="drawer-field"><div class="df-label">Finish Position</div><div class="df-val">#${esc(s.position)}</div></div>
+      ${s.resultsUrl ? `<div class="drawer-field"><div class="df-label">Results URL</div><div class="df-val"><a href="${esc(s.resultsUrl)}" target="_blank" rel="noopener">Open link &#8599;</a></div></div>` : ''}
+      <div class="drawer-field"><div class="df-label">Submitted</div><div class="df-val">${fmtDate(s.submittedAt)}</div></div>
+      <div class="drawer-field"><div class="df-label">Submission ID</div><div class="df-val" style="font-size:11px;color:var(--text3);font-family:monospace">${s.id}</div></div>
+      <hr class="drawer-divider">
+      <div class="drawer-actions">
+        ${s.status !== 'approved' ? `<button class="da-btn da-approve" onclick="setStatus('${s.id}','approved')">&#10003; Approve</button>` : ''}
+        ${s.status !== 'rejected' ? `<button class="da-btn da-reject"  onclick="setStatus('${s.id}','rejected')">&#10007; Reject</button>`  : ''}
+        <button class="da-btn da-delete" onclick="deleteEntry('${s.id}')">Delete Submission</button>
+      </div>
+    `;
+
+    drawer.classList.add('open');
+  }
+
+  function closeDrawer() {
+    drawer.classList.remove('open');
+    currentDrawerId = null;
+  }
+
+  document.getElementById('drawerClose').addEventListener('click', closeDrawer);
+  document.addEventListener('keydown', e => { if (e.key === 'Escape') closeDrawer(); });
+
+  /* ── Helpers ── */
+  function esc(str) {
+    if (!str) return '';
+    return String(str)
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;');
+  }
+</script>
+</body>
+</html>

@@ -1,0 +1,1172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GRI Formula — Global Runner Index</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:      #07070f;
+      --bg2:     #0d0d1c;
+      --bg3:     #131326;
+      --card:    #0f0f20;
+      --card2:   #181832;
+      --border:  #1c1c38;
+      --border2: #272748;
+      --green:   #00e676;
+      --green2:  #00b44e;
+      --orange:  #ff6d35;
+      --text:    #eeeeff;
+      --text2:   #8080a8;
+      --text3:   #444468;
+      --gold:    #ffbb00;
+      --r:       10px;
+      --rl:      16px;
+    }
+
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    .inner { max-width: 1080px; margin: 0 auto; padding: 0 32px; }
+
+    /* ── HEADER ─────────────────────────── */
+    header {
+      position: sticky; top: 0; z-index: 200;
+      height: 62px;
+      background: rgba(7,7,15,0.85);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border-bottom: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 32px;
+    }
+    .logo {
+      display: flex; align-items: center; gap: 12px;
+      text-decoration: none; color: inherit;
+    }
+    .logo-mark {
+      width: 36px; height: 36px; border-radius: 8px;
+      background: linear-gradient(135deg, var(--green), var(--green2));
+      display: flex; align-items: center; justify-content: center;
+      font-weight: 900; font-size: 12px; color: #000; letter-spacing: -0.5px;
+    }
+    .logo-info { display: flex; flex-direction: column; }
+    .logo-name  { font-size: 14px; font-weight: 700; letter-spacing: -0.3px; line-height: 1.2; }
+    .logo-sub   { font-size: 10px; color: var(--text2); text-transform: uppercase; letter-spacing: 0.7px; }
+    nav { display: flex; gap: 2px; }
+    nav a {
+      color: var(--text2); text-decoration: none;
+      font-size: 14px; font-weight: 500;
+      padding: 6px 14px; border-radius: 7px;
+      transition: color .15s, background .15s;
+    }
+    nav a:hover  { color: var(--text); background: var(--bg3); }
+    nav a.active { color: var(--green); background: rgba(0,230,118,.09); }
+
+    /* ── HERO ─────────────────────────────── */
+    .f-hero {
+      background: linear-gradient(160deg, #0b0b22 0%, #0f0818 50%, var(--bg) 100%);
+      border-bottom: 1px solid var(--border);
+      padding: 64px 32px 56px;
+      text-align: center;
+      position: relative; overflow: hidden;
+    }
+    .f-hero::before {
+      content: '';
+      position: absolute; inset: 0;
+      background:
+        radial-gradient(ellipse 60% 40% at 20% 60%, rgba(0,230,118,.06), transparent),
+        radial-gradient(ellipse 50% 40% at 80% 40%, rgba(255,109,53,.05), transparent);
+      pointer-events: none;
+    }
+
+    .pill {
+      display: inline-block;
+      background: rgba(0,230,118,.1); color: var(--green);
+      border: 1px solid rgba(0,230,118,.25);
+      font-size: 11px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase;
+      padding: 5px 14px; border-radius: 20px;
+      margin-bottom: 20px;
+    }
+
+    .f-hero h1 {
+      font-size: 44px; font-weight: 900; letter-spacing: -2px;
+      line-height: 1.05; margin-bottom: 14px;
+      position: relative;
+    }
+    .f-hero p {
+      color: var(--text2); font-size: 15px; margin-bottom: 44px;
+      position: relative;
+    }
+
+    /* Main equation display */
+    .main-eq {
+      display: inline-flex; align-items: center; flex-wrap: wrap;
+      justify-content: center; gap: 16px;
+      background: rgba(255,255,255,.03);
+      border: 1px solid rgba(255,255,255,.08);
+      border-radius: 20px;
+      padding: 28px 40px;
+      position: relative;
+      backdrop-filter: blur(10px);
+    }
+    .main-eq::before {
+      content: '';
+      position: absolute; inset: -1px;
+      border-radius: 20px;
+      background: linear-gradient(135deg, rgba(0,230,118,.15), rgba(255,109,53,.1), transparent);
+      z-index: -1;
+    }
+
+    .eq-block {
+      display: flex; flex-direction: column; align-items: center; gap: 4px;
+    }
+    .eq-lbl {
+      font-size: 10px; font-weight: 600; text-transform: uppercase;
+      letter-spacing: 1px; color: var(--text3);
+    }
+    .eq-sym {
+      font-size: 38px; font-weight: 900; letter-spacing: -1px; line-height: 1;
+    }
+    .eq-sym.green  { color: var(--green); }
+    .eq-sym.orange { color: var(--orange); }
+
+    .eq-op {
+      font-size: 32px; font-weight: 300; color: var(--text2);
+      padding-bottom: 18px;
+    }
+
+    /* ── RULES ──────────────────────────── */
+    .rules-section { padding: 48px 32px; }
+    .rules-grid {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 16px;
+    }
+    .rule-card {
+      background: var(--card); border: 1px solid var(--border);
+      border-radius: var(--rl); padding: 24px;
+      display: flex; align-items: flex-start; gap: 16px;
+      transition: border-color .2s, transform .2s;
+    }
+    .rule-card:hover { border-color: var(--border2); transform: translateY(-2px); }
+
+    .rule-icon {
+      width: 48px; height: 48px; border-radius: 12px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 18px; font-weight: 900; flex-shrink: 0;
+      letter-spacing: -1px;
+    }
+    .ri-green  { background: rgba(0,230,118,.12); color: var(--green); border: 1px solid rgba(0,230,118,.2); }
+    .ri-orange { background: rgba(255,109,53,.12); color: var(--orange); border: 1px solid rgba(255,109,53,.2); }
+    .ri-blue   { background: rgba(68,136,255,.12); color: #77aaff; border: 1px solid rgba(68,136,255,.2); }
+
+    .rule-body h3 { font-size: 15px; font-weight: 700; margin-bottom: 5px; }
+    .rule-body p  { font-size: 13px; color: var(--text2); line-height: 1.5; }
+
+    /* ── SECTION TITLE ──────────────────── */
+    .section-head {
+      margin-bottom: 28px;
+    }
+    .section-head h2 {
+      font-size: 26px; font-weight: 800; letter-spacing: -0.8px;
+    }
+    .section-head p { color: var(--text2); font-size: 14px; margin-top: 6px; }
+
+    /* ── FORMULA COMPONENTS ─────────────── */
+    .components-section {
+      padding: 0 32px 56px;
+    }
+    .comp-grid {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 20px;
+    }
+    .comp-card {
+      background: var(--card); border: 1px solid var(--border);
+      border-radius: var(--rl); padding: 28px;
+      display: flex; flex-direction: column; gap: 20px;
+    }
+    .comp-header { display: flex; align-items: center; gap: 12px; }
+    .comp-badge {
+      width: 40px; height: 40px; border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 14px; font-weight: 900; flex-shrink: 0;
+    }
+    .cb-green  { background: rgba(0,230,118,.15); color: var(--green); border: 1px solid rgba(0,230,118,.25); }
+    .cb-orange { background: rgba(255,109,53,.15); color: var(--orange); border: 1px solid rgba(255,109,53,.25); }
+    .comp-header h2 { font-size: 18px; font-weight: 800; }
+
+    /* Formula display box */
+    .formula-box {
+      background: var(--bg3); border: 1px solid var(--border2);
+      border-radius: var(--r); padding: 20px 24px;
+      font-size: 20px; font-weight: 700; text-align: center;
+      letter-spacing: -0.3px; line-height: 1.4;
+    }
+    .formula-box .fg  { color: var(--green); }
+    .formula-box .fo  { color: var(--orange); }
+    .formula-box sup  { font-size: 11px; }
+
+    .comp-desc { font-size: 13px; color: var(--text2); line-height: 1.6; }
+
+    /* FF example bars */
+    .ff-examples { display: flex; flex-direction: column; gap: 10px; }
+    .ff-ex { display: flex; align-items: center; gap: 10px; }
+    .ff-scenario { font-size: 11px; color: var(--text2); width: 160px; flex-shrink: 0; }
+    .ff-track {
+      flex: 1; height: 8px; background: var(--bg3);
+      border-radius: 4px; overflow: hidden;
+    }
+    .ff-fill {
+      height: 100%; border-radius: 4px;
+      background: linear-gradient(90deg, var(--green), var(--green2));
+      transition: width .6s ease;
+    }
+    .ff-val {
+      width: 36px; text-align: right;
+      font-size: 13px; font-weight: 700; flex-shrink: 0;
+    }
+    .ff-val.top { color: var(--green); }
+
+    .cap-note {
+      font-size: 11px; color: var(--text3); margin-top: 4px;
+      padding: 8px 12px; background: var(--bg3); border-radius: 6px;
+      border-left: 2px solid var(--border2);
+    }
+
+    /* Aging bars */
+    .aging-bars { display: flex; flex-direction: column; gap: 12px; }
+    .ab-row { display: flex; align-items: center; gap: 10px; }
+    .ab-label { font-size: 11px; color: var(--text2); width: 170px; flex-shrink: 0; }
+    .ab-track {
+      flex: 1; height: 10px; background: var(--bg3);
+      border-radius: 5px; overflow: hidden;
+    }
+    .ab-fill {
+      height: 100%; border-radius: 5px;
+      transition: width .8s ease;
+    }
+    .ab-fill.af-1 { background: linear-gradient(90deg, var(--green), #00cc60); }
+    .ab-fill.af-2 { background: linear-gradient(90deg, #44dd88, #22aa55); }
+    .ab-fill.af-3 { background: linear-gradient(90deg, #88cc88, #558855); }
+    .ab-fill.af-4 { background: linear-gradient(90deg, #779977, #446644); }
+    .ab-fill.af-5 { background: #3a4a3a; }
+    .ab-fill.af-6 { background: #2e3e2e; }
+    .ab-val {
+      width: 44px; text-align: right;
+      font-size: 13px; font-weight: 800; flex-shrink: 0;
+    }
+    .ab-val.bright { color: var(--green); }
+    .ab-val.mid    { color: #66aa66; }
+    .ab-val.dim    { color: var(--text3); }
+
+    /* ── TIMELINE ────────────────────────── */
+    .timeline-section {
+      background: var(--bg2); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border);
+      padding: 48px 32px;
+    }
+
+    .tl-wrap {
+      position: relative; padding-top: 20px;
+    }
+    .tl-track-line {
+      position: absolute; top: 20px; left: 0; right: 0; height: 2px;
+      background: linear-gradient(90deg, var(--green), var(--green2), #448844, #336633, var(--text3), var(--text3));
+      border-radius: 1px;
+    }
+    .tl-periods {
+      display: grid; grid-template-columns: repeat(6, 1fr);
+      gap: 0; position: relative;
+    }
+    .tl-period {
+      display: flex; flex-direction: column; align-items: center;
+      gap: 10px; padding-top: 0;
+    }
+    .tl-dot {
+      width: 16px; height: 16px; border-radius: 50%;
+      border: 2px solid; flex-shrink: 0;
+    }
+    .td-1 { border-color: var(--green);  background: var(--green); }
+    .td-2 { border-color: #44dd88; background: #44dd88; }
+    .td-3 { border-color: #88cc88; background: #88cc88; }
+    .td-4 { border-color: #779977; background: #779977; }
+    .td-5 { border-color: #4a5a4a; background: #4a5a4a; }
+    .td-6 { border-color: #3a4a3a; background: #3a4a3a; }
+
+    .tl-p-label {
+      font-size: 12px; font-weight: 700; text-align: center;
+    }
+    .tl-p-range {
+      font-size: 11px; color: var(--text2); text-align: center;
+    }
+    .tl-p-mult {
+      font-size: 14px; font-weight: 900; text-align: center;
+    }
+    .tl-p-top {
+      font-size: 10px; color: var(--text3); text-align: center;
+    }
+
+    .tl-colors > * { color: var(--text2); }
+    .tl-1 .tl-p-mult { color: var(--green); }
+    .tl-2 .tl-p-mult { color: #44dd88; }
+    .tl-3 .tl-p-mult { color: #88cc88; }
+    .tl-4 .tl-p-mult { color: #668866; }
+    .tl-5 .tl-p-mult { color: var(--text3); }
+    .tl-6 .tl-p-mult { color: var(--text3); }
+
+    /* ── CALCULATOR ──────────────────────── */
+    .calc-section { padding: 56px 32px; }
+
+    .calc-card {
+      background: var(--card); border: 1px solid var(--border);
+      border-radius: var(--rl); overflow: hidden;
+    }
+    .calc-grid {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 0;
+    }
+
+    .calc-inputs-panel {
+      padding: 32px; border-right: 1px solid var(--border);
+    }
+    .calc-inputs-panel h3 {
+      font-size: 14px; font-weight: 700; color: var(--text2);
+      text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 24px;
+    }
+    .calc-field { margin-bottom: 20px; }
+    .calc-field label {
+      display: block; font-size: 12px; font-weight: 600; color: var(--text2);
+      text-transform: uppercase; letter-spacing: 0.6px; margin-bottom: 7px;
+    }
+    .calc-field input,
+    .calc-field select {
+      width: 100%; background: var(--bg3); border: 1px solid var(--border2);
+      color: var(--text); font-family: inherit; font-size: 16px; font-weight: 700;
+      padding: 11px 14px; border-radius: var(--r); outline: none;
+      transition: border-color .2s;
+      appearance: none; -webkit-appearance: none;
+    }
+    .calc-field input:focus,
+    .calc-field select:focus { border-color: var(--green); }
+    .select-wrap { position: relative; }
+    .select-wrap::after {
+      content: '▾'; position: absolute; right: 14px; top: 50%;
+      transform: translateY(-50%); color: var(--text2); pointer-events: none;
+      font-size: 14px;
+    }
+
+    .calc-results-panel { padding: 32px; }
+    .calc-results-panel h3 {
+      font-size: 14px; font-weight: 700; color: var(--text2);
+      text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 24px;
+    }
+
+    .calc-step {
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 12px 0; border-bottom: 1px solid var(--border);
+    }
+    .calc-step:last-child { border-bottom: none; }
+    .cs-label { font-size: 13px; color: var(--text2); }
+    .cs-val   { font-size: 16px; font-weight: 800; }
+    .cs-val.green  { color: var(--green); }
+    .cs-val.orange { color: var(--orange); }
+
+    .calc-total-row {
+      margin-top: 20px; padding: 18px 20px;
+      background: rgba(0,230,118,.07);
+      border: 1px solid rgba(0,230,118,.2);
+      border-radius: var(--r);
+      display: flex; justify-content: space-between; align-items: center;
+    }
+    .ct-label { font-size: 13px; font-weight: 700; color: var(--green); }
+    .ct-val   { font-size: 28px; font-weight: 900; color: var(--green); }
+
+    .calc-error {
+      color: #ff4455; font-size: 13px;
+      padding: 10px 14px; background: rgba(255,68,85,.08);
+      border-radius: var(--r); border: 1px solid rgba(255,68,85,.2);
+      margin-top: 12px; display: none;
+    }
+
+    /* ── POINT COLLECTION ────────────────── */
+    .collection-section {
+      background: var(--bg2); border-top: 1px solid var(--border);
+      padding: 56px 32px;
+    }
+
+    .period-grid {
+      display: grid; grid-template-columns: repeat(6, 1fr); gap: 12px;
+      margin-top: 32px;
+    }
+
+    .period-col {
+      background: var(--card); border: 1px solid var(--border);
+      border-radius: var(--rl); overflow: hidden;
+    }
+
+    .pc-header {
+      padding: 12px 14px; border-bottom: 1px solid var(--border);
+      background: var(--bg3);
+    }
+    .pc-label { display: block; font-size: 12px; font-weight: 700; }
+    .pc-sub   { display: block; font-size: 10px; color: var(--text3); margin-top: 2px; }
+
+    .pc-col-1 .pc-label { color: var(--green); }
+    .pc-col-2 .pc-label { color: #44dd88; }
+    .pc-col-3 .pc-label { color: #88cc88; }
+    .pc-col-4 .pc-label { color: #668866; }
+    .pc-col-5 .pc-label { color: var(--text3); }
+    .pc-col-6 .pc-label { color: var(--text3); }
+
+    .pc-results { padding: 10px; display: flex; flex-direction: column; gap: 5px; }
+
+    .pc-result {
+      padding: 6px 8px; border-radius: 6px;
+      font-size: 12px; font-weight: 700; text-align: right;
+      font-variant-numeric: tabular-nums;
+      border: 1px solid transparent;
+    }
+    .pc-result.selected {
+      background: rgba(0,230,118,.08);
+      border-color: rgba(0,230,118,.18);
+      color: var(--text);
+    }
+    .pc-result.selected::before {
+      content: '✓ ';
+      font-size: 9px; color: var(--green);
+    }
+    .pc-result.unselected {
+      background: var(--bg3); color: var(--text3);
+    }
+
+    .pc-total {
+      margin-top: 24px; padding: 16px 20px;
+      background: rgba(0,230,118,.06); border: 1px solid rgba(0,230,118,.2);
+      border-radius: var(--r); text-align: center;
+    }
+    .pc-total-label { font-size: 11px; color: var(--green); font-weight: 700; text-transform: uppercase; letter-spacing: 1px; }
+    .pc-total-eq    { font-size: 13px; color: var(--text2); margin-top: 8px; line-height: 1.8; }
+    .pc-total-val   { font-size: 26px; font-weight: 900; color: var(--green); margin-top: 8px; }
+
+    /* ── WORKED EXAMPLE ──────────────────── */
+    .example-section { padding: 56px 32px; }
+
+    .example-card {
+      background: var(--card); border: 1px solid var(--border);
+      border-radius: var(--rl); overflow: hidden;
+    }
+
+    .ex-banner {
+      background: linear-gradient(120deg, rgba(0,230,118,.08), rgba(255,109,53,.05));
+      border-bottom: 1px solid var(--border);
+      padding: 24px 32px;
+      display: flex; align-items: center; gap: 16px; flex-wrap: wrap;
+    }
+    .ex-badge {
+      background: rgba(0,230,118,.12); color: var(--green);
+      border: 1px solid rgba(0,230,118,.25);
+      font-size: 11px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase;
+      padding: 4px 12px; border-radius: 20px;
+    }
+    .ex-title { font-size: 16px; font-weight: 700; }
+    .ex-desc  { font-size: 14px; color: var(--text2); margin-left: auto; }
+
+    .ex-steps { padding: 0; }
+    .ex-step {
+      display: flex; align-items: flex-start; gap: 0;
+      border-bottom: 1px solid var(--border);
+    }
+    .ex-step:last-child { border-bottom: none; }
+
+    .ex-num {
+      width: 56px; flex-shrink: 0; padding: 24px;
+      font-size: 24px; font-weight: 900; color: var(--text3);
+      border-right: 1px solid var(--border);
+      text-align: center;
+    }
+    .ex-body { padding: 24px 28px; flex: 1; }
+    .ex-body h3 {
+      font-size: 13px; font-weight: 700; color: var(--text2);
+      text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 12px;
+    }
+
+    .ex-values {
+      display: flex; gap: 20px; flex-wrap: wrap; margin-bottom: 12px;
+    }
+    .ex-val-item { display: flex; flex-direction: column; gap: 3px; }
+    .ev-label { font-size: 11px; color: var(--text3); text-transform: uppercase; letter-spacing: 0.5px; }
+    .ev-val   { font-size: 22px; font-weight: 800; }
+    .ev-val.green  { color: var(--green); }
+    .ev-val.orange { color: var(--orange); }
+
+    .ex-formula-display {
+      background: var(--bg3); border: 1px solid var(--border2);
+      border-radius: var(--r); padding: 14px 18px;
+      font-size: 14px; color: var(--text2); margin-top: 8px;
+    }
+    .ex-formula-display strong { color: var(--text); }
+    .ex-formula-display .green  { color: var(--green); font-weight: 800; }
+    .ex-formula-display .orange { color: var(--orange); font-weight: 800; }
+
+    .ex-result-final {
+      display: flex; align-items: center; gap: 16px;
+      padding: 20px 28px 28px 84px; flex-wrap: wrap;
+    }
+    .erf-label { font-size: 14px; color: var(--text2); }
+    .erf-eq    { font-size: 15px; color: var(--text); }
+    .erf-val   { font-size: 36px; font-weight: 900; color: var(--green); }
+    .erf-unit  { font-size: 13px; color: var(--text2); margin-top: 8px; }
+
+    /* ── FOOTER ─────────────────────────── */
+    footer {
+      border-top: 1px solid var(--border);
+      padding: 22px 32px; text-align: center;
+      color: var(--text3); font-size: 12px;
+    }
+    footer a { color: var(--green); text-decoration: none; }
+    footer a:hover { text-decoration: underline; }
+
+    /* ── RESPONSIVE ─────────────────────── */
+    @media (max-width: 860px) {
+      .comp-grid  { grid-template-columns: 1fr; }
+      .period-grid { grid-template-columns: repeat(3, 1fr); }
+      .tl-periods { grid-template-columns: repeat(3, 1fr); gap: 16px; }
+      .tl-track-line { display: none; }
+      .tl-wrap { padding-top: 0; }
+      .calc-grid { grid-template-columns: 1fr; }
+      .calc-inputs-panel { border-right: none; border-bottom: 1px solid var(--border); }
+    }
+    @media (max-width: 600px) {
+      header { padding: 0 16px; }
+      .logo-info { display: none; }
+      .f-hero { padding: 40px 16px 36px; }
+      .f-hero h1 { font-size: 30px; }
+      .main-eq { padding: 20px 24px; gap: 10px; }
+      .eq-sym { font-size: 28px; }
+      .inner { padding: 0 16px; }
+      .rules-section,
+      .components-section,
+      .timeline-section,
+      .calc-section,
+      .collection-section,
+      .example-section { padding-left: 16px; padding-right: 16px; }
+      .period-grid { grid-template-columns: repeat(2, 1fr); }
+      .tl-periods { grid-template-columns: repeat(2, 1fr); }
+      .ff-scenario { width: 120px; }
+      .ab-label { width: 130px; }
+      .ex-result-final { padding-left: 28px; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ── HEADER ──────────────────────────────────────── -->
+<header>
+  <a href="index.html" class="logo">
+    <div class="logo-mark">GRI</div>
+    <div class="logo-info">
+      <span class="logo-name">Global Runner Index</span>
+      <span class="logo-sub">The global ranking authority for runners</span>
+    </div>
+  </a>
+  <nav>
+    <a href="index.html">Rankings</a>
+    <a href="formula.html" class="active">Formula</a>
+  </nav>
+</header>
+
+<!-- ── HERO ────────────────────────────────────────── -->
+<section class="f-hero">
+  <span class="pill">GRI Formula</span>
+  <h1>The Science Behind the Score</h1>
+  <p>Transparent, data-driven &middot; Verified public race results &middot; Rolling 36-month window</p>
+
+  <div class="main-eq">
+    <div class="eq-block">
+      <span class="eq-lbl">Event Score</span>
+      <span class="eq-sym">S</span>
+    </div>
+    <span class="eq-op">=</span>
+    <div class="eq-block">
+      <span class="eq-lbl">Finishing Factor</span>
+      <span class="eq-sym green">FF</span>
+    </div>
+    <span class="eq-op">&times;</span>
+    <div class="eq-block">
+      <span class="eq-lbl">Aging Factor</span>
+      <span class="eq-sym orange">AF</span>
+    </div>
+  </div>
+</section>
+
+<!-- ── RULES ───────────────────────────────────────── -->
+<div class="rules-section inner">
+  <div class="rules-grid">
+    <div class="rule-card">
+      <div class="rule-icon ri-green">32+</div>
+      <div class="rule-body">
+        <h3>Minimum Field Size</h3>
+        <p>A race must have at least 32 finishers to qualify for GRI scoring.</p>
+      </div>
+    </div>
+    <div class="rule-card">
+      <div class="rule-icon ri-orange">36</div>
+      <div class="rule-body">
+        <h3>Month Rolling Window</h3>
+        <p>Only results from the past 36 months are included in your GRI score.</p>
+      </div>
+    </div>
+    <div class="rule-card">
+      <div class="rule-icon ri-blue" style="font-size:22px">✓</div>
+      <div class="rule-body">
+        <h3>Verified Results Only</h3>
+        <p>Only officially verified, publicly available race results are counted.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ── FORMULA COMPONENTS ──────────────────────────── -->
+<div class="components-section inner">
+  <div class="section-head">
+    <h2>Formula Components</h2>
+    <p>Two factors multiply together to produce every event score.</p>
+  </div>
+
+  <div class="comp-grid">
+
+    <!-- Finishing Factor -->
+    <div class="comp-card">
+      <div class="comp-header">
+        <div class="comp-badge cb-green">FF</div>
+        <h2>Finishing Factor</h2>
+      </div>
+
+      <div class="formula-box">
+        FF = log<sub>10</sub>
+        &thinsp;(&thinsp;
+        <span class="fg">Field Size</span>
+        &nbsp;&divide;&nbsp;
+        <span class="fo">Finish Position</span>
+        &thinsp;)
+      </div>
+
+      <p class="comp-desc">
+        Rewards runners for both finishing higher and beating a larger field.
+        A win in a 1,000-person race scores much higher than 10th in a 50-person race.
+      </p>
+
+      <div class="ff-examples">
+        <div class="ff-ex">
+          <span class="ff-scenario">1st &middot; 1,000 finishers</span>
+          <div class="ff-track"><div class="ff-fill" style="width:88%"></div></div>
+          <span class="ff-val top">3.00</span>
+        </div>
+        <div class="ff-ex">
+          <span class="ff-scenario">2nd &middot; 1,000 finishers</span>
+          <div class="ff-track"><div class="ff-fill" style="width:79%"></div></div>
+          <span class="ff-val top">2.70</span>
+        </div>
+        <div class="ff-ex">
+          <span class="ff-scenario">10th &middot; 500 finishers</span>
+          <div class="ff-track"><div class="ff-fill" style="width:50%"></div></div>
+          <span class="ff-val">1.70</span>
+        </div>
+        <div class="ff-ex">
+          <span class="ff-scenario">50th &middot; 500 finishers</span>
+          <div class="ff-track"><div class="ff-fill" style="width:29%"></div></div>
+          <span class="ff-val">1.00</span>
+        </div>
+      </div>
+
+      <p class="cap-note">
+        &#9432;&ensp;Field size is capped at <strong>2,700</strong> for scoring purposes,
+        regardless of actual race size. Maximum possible FF &asymp; <strong>3.43</strong>.
+      </p>
+    </div>
+
+    <!-- Aging Factor -->
+    <div class="comp-card">
+      <div class="comp-header">
+        <div class="comp-badge cb-orange">AF</div>
+        <h2>Aging Factor</h2>
+      </div>
+
+      <p class="comp-desc">
+        Recent results carry far more weight. Every result falls into one of six 6-month
+        aging periods — the older the result, the lower the multiplier.
+      </p>
+
+      <div class="aging-bars">
+        <div class="ab-row">
+          <span class="ab-label">Period 1 &nbsp;0–6 months</span>
+          <div class="ab-track"><div class="ab-fill af-1" style="width:100%"></div></div>
+          <span class="ab-val bright">3.00×</span>
+        </div>
+        <div class="ab-row">
+          <span class="ab-label">Period 2 &nbsp;7–12 months</span>
+          <div class="ab-track"><div class="ab-fill af-2" style="width:75%"></div></div>
+          <span class="ab-val mid">2.25×</span>
+        </div>
+        <div class="ab-row">
+          <span class="ab-label">Period 3 &nbsp;13–18 months</span>
+          <div class="ab-track"><div class="ab-fill af-3" style="width:40%"></div></div>
+          <span class="ab-val mid">1.20×</span>
+        </div>
+        <div class="ab-row">
+          <span class="ab-label">Period 4 &nbsp;19–24 months</span>
+          <div class="ab-track"><div class="ab-fill af-4" style="width:20%"></div></div>
+          <span class="ab-val dim">0.60×</span>
+        </div>
+        <div class="ab-row">
+          <span class="ab-label">Period 5 &nbsp;25–30 months</span>
+          <div class="ab-track"><div class="ab-fill af-5" style="width:8%"></div></div>
+          <span class="ab-val dim">0.25×</span>
+        </div>
+        <div class="ab-row">
+          <span class="ab-label">Period 6 &nbsp;31–36 months</span>
+          <div class="ab-track"><div class="ab-fill af-6" style="width:8%"></div></div>
+          <span class="ab-val dim">0.25×</span>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ── AGING TIMELINE ───────────────────────────────── -->
+<section class="timeline-section">
+  <div class="inner">
+    <div class="section-head">
+      <h2>Six Aging Periods</h2>
+      <p>Every result is assigned to a period based on how long ago the race took place.</p>
+    </div>
+
+    <div class="tl-wrap">
+      <div class="tl-track-line"></div>
+      <div class="tl-periods">
+
+        <div class="tl-period tl-1">
+          <div class="tl-dot td-1"></div>
+          <div class="tl-p-label" style="color:var(--green)">Period 1</div>
+          <div class="tl-p-range">0 – 6 months</div>
+          <div class="tl-p-mult tl-1" style="color:var(--green)">3.00×</div>
+          <div class="tl-p-top">Top 5 count</div>
+        </div>
+
+        <div class="tl-period tl-2">
+          <div class="tl-dot td-2"></div>
+          <div class="tl-p-label" style="color:#44dd88">Period 2</div>
+          <div class="tl-p-range">7 – 12 months</div>
+          <div class="tl-p-mult" style="color:#44dd88">2.25×</div>
+          <div class="tl-p-top">Top 5 count</div>
+        </div>
+
+        <div class="tl-period tl-3">
+          <div class="tl-dot td-3"></div>
+          <div class="tl-p-label" style="color:#88cc88">Period 3</div>
+          <div class="tl-p-range">13 – 18 months</div>
+          <div class="tl-p-mult" style="color:#88cc88">1.20×</div>
+          <div class="tl-p-top">Top 4 count</div>
+        </div>
+
+        <div class="tl-period tl-4">
+          <div class="tl-dot td-4"></div>
+          <div class="tl-p-label" style="color:#668866">Period 4</div>
+          <div class="tl-p-range">19 – 24 months</div>
+          <div class="tl-p-mult" style="color:#668866">0.60×</div>
+          <div class="tl-p-top">Top 4 count</div>
+        </div>
+
+        <div class="tl-period tl-5">
+          <div class="tl-dot td-5"></div>
+          <div class="tl-p-label" style="color:var(--text3)">Period 5</div>
+          <div class="tl-p-range">25 – 30 months</div>
+          <div class="tl-p-mult" style="color:var(--text3)">0.25×</div>
+          <div class="tl-p-top">Top 4 count</div>
+        </div>
+
+        <div class="tl-period tl-6">
+          <div class="tl-dot td-6"></div>
+          <div class="tl-p-label" style="color:var(--text3)">Period 6</div>
+          <div class="tl-p-range">31 – 36 months</div>
+          <div class="tl-p-mult" style="color:var(--text3)">0.25×</div>
+          <div class="tl-p-top">Top 4 count</div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── CALCULATOR ───────────────────────────────────── -->
+<section class="calc-section inner">
+  <div class="section-head">
+    <h2>Event Score Calculator</h2>
+    <p>Enter a race result to see how its GRI event score is computed.</p>
+  </div>
+
+  <div class="calc-card">
+    <div class="calc-grid">
+
+      <div class="calc-inputs-panel">
+        <h3>Race Input</h3>
+
+        <div class="calc-field">
+          <label>Field Size (finishers)</label>
+          <input type="number" id="fieldSize" value="1200" min="32" max="500000" placeholder="e.g. 1200">
+        </div>
+
+        <div class="calc-field">
+          <label>Finish Position</label>
+          <input type="number" id="finishPos" value="2" min="1" placeholder="e.g. 2">
+        </div>
+
+        <div class="calc-field">
+          <label>Aging Period</label>
+          <div class="select-wrap">
+            <select id="periodSel">
+              <option value="3.00">Period 1 — 0 to 6 months (3.00×)</option>
+              <option value="2.25">Period 2 — 7 to 12 months (2.25×)</option>
+              <option value="1.20">Period 3 — 13 to 18 months (1.20×)</option>
+              <option value="0.60">Period 4 — 19 to 24 months (0.60×)</option>
+              <option value="0.25">Period 5 — 25 to 30 months (0.25×)</option>
+              <option value="0.25x6">Period 6 — 31 to 36 months (0.25×)</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="calc-error" id="calcError"></div>
+      </div>
+
+      <div class="calc-results-panel">
+        <h3>Computed Score</h3>
+
+        <div class="calc-step">
+          <span class="cs-label">Field Size (capped at 2,700)</span>
+          <span class="cs-val" id="r-field">1,200</span>
+        </div>
+        <div class="calc-step">
+          <span class="cs-label">Finish Position</span>
+          <span class="cs-val" id="r-pos">2</span>
+        </div>
+        <div class="calc-step">
+          <span class="cs-label">log&#8321;&#8320;( Field &divide; Position )</span>
+          <span class="cs-val green" id="r-ff">2.778</span>
+        </div>
+        <div class="calc-step">
+          <span class="cs-label">Aging Factor</span>
+          <span class="cs-val orange" id="r-af">3.00×</span>
+        </div>
+
+        <div class="calc-total-row">
+          <span class="ct-label">&#9889; Event Score</span>
+          <span class="ct-val" id="r-score">8.33</span>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ── POINT COLLECTION ─────────────────────────────── -->
+<section class="collection-section">
+  <div class="inner">
+    <div class="section-head">
+      <h2>How Total GRI Points Are Built</h2>
+      <p>
+        Your total GRI score sums your <strong>best eligible event scores</strong> across all six periods.
+        Only the top results from each period are selected — extra results do not count.
+      </p>
+    </div>
+
+    <div class="period-grid">
+
+      <div class="period-col pc-col-1">
+        <div class="pc-header">
+          <span class="pc-label">Period 1</span>
+          <span class="pc-sub">Best 5 of N</span>
+        </div>
+        <div class="pc-results">
+          <div class="pc-result selected">8.33</div>
+          <div class="pc-result selected">7.95</div>
+          <div class="pc-result selected">7.62</div>
+          <div class="pc-result selected">7.08</div>
+          <div class="pc-result selected">6.91</div>
+          <div class="pc-result unselected">6.33</div>
+          <div class="pc-result unselected">5.78</div>
+        </div>
+      </div>
+
+      <div class="period-col pc-col-2">
+        <div class="pc-header">
+          <span class="pc-label">Period 2</span>
+          <span class="pc-sub">Best 5 of N</span>
+        </div>
+        <div class="pc-results">
+          <div class="pc-result selected">7.20</div>
+          <div class="pc-result selected">6.89</div>
+          <div class="pc-result selected">6.54</div>
+          <div class="pc-result selected">6.22</div>
+          <div class="pc-result selected">5.88</div>
+          <div class="pc-result unselected">5.44</div>
+        </div>
+      </div>
+
+      <div class="period-col pc-col-3">
+        <div class="pc-header">
+          <span class="pc-label">Period 3</span>
+          <span class="pc-sub">Best 4 of N</span>
+        </div>
+        <div class="pc-results">
+          <div class="pc-result selected">5.80</div>
+          <div class="pc-result selected">5.41</div>
+          <div class="pc-result selected">4.98</div>
+          <div class="pc-result selected">4.55</div>
+          <div class="pc-result unselected">4.01</div>
+        </div>
+      </div>
+
+      <div class="period-col pc-col-4">
+        <div class="pc-header">
+          <span class="pc-label">Period 4</span>
+          <span class="pc-sub">Best 4 of N</span>
+        </div>
+        <div class="pc-results">
+          <div class="pc-result selected">3.12</div>
+          <div class="pc-result selected">2.88</div>
+          <div class="pc-result selected">2.64</div>
+          <div class="pc-result selected">2.40</div>
+          <div class="pc-result unselected">2.15</div>
+        </div>
+      </div>
+
+      <div class="period-col pc-col-5">
+        <div class="pc-header">
+          <span class="pc-label">Period 5</span>
+          <span class="pc-sub">Best 4 of N</span>
+        </div>
+        <div class="pc-results">
+          <div class="pc-result selected">1.22</div>
+          <div class="pc-result selected">1.08</div>
+          <div class="pc-result selected">0.98</div>
+          <div class="pc-result selected">0.85</div>
+        </div>
+      </div>
+
+      <div class="period-col pc-col-6">
+        <div class="pc-header">
+          <span class="pc-label">Period 6</span>
+          <span class="pc-sub">Best 4 of N</span>
+        </div>
+        <div class="pc-results">
+          <div class="pc-result selected">1.10</div>
+          <div class="pc-result selected">0.95</div>
+          <div class="pc-result selected">0.82</div>
+          <div class="pc-result selected">0.70</div>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="pc-total">
+      <div class="pc-total-label">&#9650; Total GRI Points</div>
+      <div class="pc-total-eq">
+        (8.33 + 7.95 + 7.62 + 7.08 + 6.91)
+        &nbsp;+&nbsp; (7.20 + 6.89 + 6.54 + 6.22 + 5.88)
+        &nbsp;+&nbsp; (5.80 + 5.41 + 4.98 + 4.55)
+        &nbsp;+&nbsp; &#8230;
+      </div>
+      <div class="pc-total-val">120.47 pts</div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ── WORKED EXAMPLE ───────────────────────────────── -->
+<section class="example-section inner">
+  <div class="section-head">
+    <h2>Example Calculation</h2>
+    <p>Step by step: turning a race result into a GRI event score.</p>
+  </div>
+
+  <div class="example-card">
+    <div class="ex-banner">
+      <span class="ex-badge">Worked Example</span>
+      <span class="ex-title">2nd place &middot; 1,200 finishers &middot; Period 1 race</span>
+      <span class="ex-desc">Race within the last 6 months</span>
+    </div>
+
+    <div class="ex-steps">
+
+      <div class="ex-step">
+        <div class="ex-num">1</div>
+        <div class="ex-body">
+          <h3>Race Details</h3>
+          <div class="ex-values">
+            <div class="ex-val-item">
+              <span class="ev-label">Field Size</span>
+              <span class="ev-val">1,200</span>
+            </div>
+            <div class="ex-val-item">
+              <span class="ev-label">Finish Position</span>
+              <span class="ev-val">2nd</span>
+            </div>
+            <div class="ex-val-item">
+              <span class="ev-label">Months Ago</span>
+              <span class="ev-val">3 months</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="ex-step">
+        <div class="ex-num">2</div>
+        <div class="ex-body">
+          <h3>Apply Field Size Cap</h3>
+          <div class="ex-values">
+            <div class="ex-val-item">
+              <span class="ev-label">Field Size</span>
+              <span class="ev-val">1,200</span>
+            </div>
+            <div class="ex-val-item">
+              <span class="ev-label">Cap</span>
+              <span class="ev-val">2,700</span>
+            </div>
+            <div class="ex-val-item">
+              <span class="ev-label">Used Value</span>
+              <span class="ev-val green">1,200 ✓</span>
+            </div>
+          </div>
+          <div class="ex-formula-display">
+            1,200 is below the 2,700 cap &mdash; no adjustment needed.
+          </div>
+        </div>
+      </div>
+
+      <div class="ex-step">
+        <div class="ex-num">3</div>
+        <div class="ex-body">
+          <h3>Compute Finishing Factor</h3>
+          <div class="ex-formula-display">
+            FF = log&#8321;&#8320;( 1,200 &divide; 2 )
+            &nbsp;=&nbsp; log&#8321;&#8320;( <strong>600</strong> )
+            &nbsp;=&nbsp; <span class="green">2.778</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="ex-step">
+        <div class="ex-num">4</div>
+        <div class="ex-body">
+          <h3>Identify Aging Period &amp; Factor</h3>
+          <div class="ex-values">
+            <div class="ex-val-item">
+              <span class="ev-label">Months Ago</span>
+              <span class="ev-val">3</span>
+            </div>
+            <div class="ex-val-item">
+              <span class="ev-label">Period</span>
+              <span class="ev-val">Period 1</span>
+            </div>
+            <div class="ex-val-item">
+              <span class="ev-label">Aging Factor</span>
+              <span class="ev-val orange">3.00×</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="ex-step" style="border-bottom:none">
+        <div class="ex-num">5</div>
+        <div class="ex-body">
+          <h3>Multiply for Event Score</h3>
+          <div class="ex-formula-display">
+            Event Score = FF &times; AF
+            &nbsp;=&nbsp; <span class="green">2.778</span>
+            &nbsp;&times;&nbsp; <span class="orange">3.00</span>
+            &nbsp;=&nbsp; <strong class="green">8.33</strong>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="ex-result-final">
+      <div>
+        <div class="erf-label">This result contributes</div>
+        <div class="erf-val">8.33</div>
+        <div class="erf-unit">points to Period 1 &mdash; eligible for the runner's best 5 in that period</div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ── FOOTER ──────────────────────────────────────── -->
+<footer>
+  &copy; 2026 Global Runner Index &nbsp;&middot;&nbsp;
+  <a href="index.html">View World Rankings</a>
+  &nbsp;&middot;&nbsp; Formula subject to change as GRI develops
+</footer>
+
+<script>
+  const fieldInput  = document.getElementById('fieldSize');
+  const posInput    = document.getElementById('finishPos');
+  const periodSel   = document.getElementById('periodSel');
+  const errEl       = document.getElementById('calcError');
+
+  function compute() {
+    const rawField = parseFloat(fieldInput.value);
+    const pos      = parseFloat(posInput.value);
+    const afVal    = parseFloat(periodSel.value); // "0.25x6" parses to NaN, handle below
+    const af       = isNaN(afVal) ? 0.25 : afVal;
+
+    errEl.style.display = 'none';
+
+    if (!rawField || isNaN(rawField) || rawField < 32) {
+      errEl.textContent = 'Field size must be at least 32.';
+      errEl.style.display = 'block';
+      return;
+    }
+    if (!pos || isNaN(pos) || pos < 1) {
+      errEl.textContent = 'Finish position must be 1 or higher.';
+      errEl.style.display = 'block';
+      return;
+    }
+    if (pos > rawField) {
+      errEl.textContent = 'Finish position cannot exceed field size.';
+      errEl.style.display = 'block';
+      return;
+    }
+
+    const cappedField = Math.min(rawField, 2700);
+    const ff          = Math.log10(cappedField / pos);
+    const score       = ff * af;
+
+    document.getElementById('r-field').textContent =
+      cappedField < rawField
+        ? cappedField.toLocaleString() + ' (capped)'
+        : cappedField.toLocaleString();
+    document.getElementById('r-pos').textContent   = pos.toLocaleString();
+    document.getElementById('r-ff').textContent    = ff.toFixed(3);
+    document.getElementById('r-af').textContent    = af.toFixed(2) + '×';
+    document.getElementById('r-score').textContent = score.toFixed(2);
+  }
+
+  fieldInput.addEventListener('input', compute);
+  posInput.addEventListener('input', compute);
+  periodSel.addEventListener('change', compute);
+
+  compute();
+</script>
+</body>
+</html>
