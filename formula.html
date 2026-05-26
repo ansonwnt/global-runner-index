@@ -861,7 +861,7 @@
 
         <div class="calc-total-row">
           <span class="ct-label">&#9889; Event Score</span>
-          <span class="ct-val" id="r-score">83</span>
+          <span class="ct-val" id="r-score">83.34</span>
         </div>
       </div>
 
@@ -1085,7 +1085,7 @@
             Event Score = FF &times; AF
             &nbsp;=&nbsp; <span class="green">2.778</span>
             &nbsp;&times;&nbsp; <span class="orange">30</span>
-            &nbsp;=&nbsp; <strong class="green">83</strong>
+            &nbsp;=&nbsp; <strong class="green">83.34</strong>
           </div>
         </div>
       </div>
@@ -1095,7 +1095,7 @@
     <div class="ex-result-final">
       <div>
         <div class="erf-label">This result contributes</div>
-        <div class="erf-val">83</div>
+        <div class="erf-val">83.34</div>
         <div class="erf-unit">points to Period 1 &mdash; eligible for the runner's best 5 in that period</div>
       </div>
     </div>
@@ -1151,7 +1151,7 @@
     document.getElementById('r-pos').textContent   = pos.toLocaleString();
     document.getElementById('r-ff').textContent    = ff.toFixed(3);
     document.getElementById('r-af').textContent    = af.toFixed(1) + '×';
-    document.getElementById('r-score').textContent = Math.round(score);
+    document.getElementById('r-score').textContent = score.toFixed(2);
   }
 
   fieldInput.addEventListener('input', compute);
