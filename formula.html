@@ -601,7 +601,7 @@
     </div>
     <span class="eq-op">&times;</span>
     <div class="eq-block">
-      <span class="eq-lbl">Aging Factor</span>
+      <span class="eq-lbl">Decay Factor</span>
       <span class="eq-sym orange">AF</span>
     </div>
   </div>
@@ -611,10 +611,10 @@
 <div class="rules-section inner">
   <div class="rules-grid">
     <div class="rule-card">
-      <div class="rule-icon ri-green">32+</div>
+      <div class="rule-icon ri-green">100+</div>
       <div class="rule-body">
         <h3>Minimum Field Size</h3>
-        <p>A race must have at least 32 participants to qualify for GRI scoring.</p>
+        <p>A race must have at least 100 participants to qualify for GRI scoring.</p>
       </div>
     </div>
     <div class="rule-card">
@@ -688,21 +688,21 @@
       </div>
 
       <p class="cap-note">
-        &#9432;&ensp;Field size is capped at <strong>2,700</strong> for scoring purposes,
+        &#9432;&ensp;Field size is capped at <strong>10,000</strong> for scoring purposes,
         regardless of actual race size. Maximum possible FF &asymp; <strong>3.43</strong>.
       </p>
     </div>
 
-    <!-- Aging Factor -->
+    <!-- Decay Factor -->
     <div class="comp-card">
       <div class="comp-header">
         <div class="comp-badge cb-orange">AF</div>
-        <h2>Aging Factor</h2>
+        <h2>Decay Factor</h2>
       </div>
 
       <p class="comp-desc">
         Recent results carry far more weight. Every result falls into one of six 6-month
-        aging periods — the older the result, the lower the multiplier.
+        decay periods — the older the result, the lower the multiplier.
       </p>
 
       <div class="aging-bars">
@@ -742,11 +742,11 @@
   </div>
 </div>
 
-<!-- ── AGING TIMELINE ───────────────────────────────── -->
+<!-- ── DECAY TIMELINE ───────────────────────────────── -->
 <section class="timeline-section">
   <div class="inner">
     <div class="section-head">
-      <h2>Six Aging Periods</h2>
+      <h2>Six Decay Periods</h2>
       <p>Every result is assigned to a period based on how long ago the race took place.</p>
     </div>
 
@@ -759,7 +759,7 @@
           <div class="tl-p-label" style="color:var(--green)">Period 1</div>
           <div class="tl-p-range">0 – 6 months</div>
           <div class="tl-p-mult tl-1" style="color:var(--green)">3.00×</div>
-          <div class="tl-p-top">Top 5 count</div>
+          <div class="tl-p-top">Top 5 results</div>
         </div>
 
         <div class="tl-period tl-2">
@@ -767,7 +767,7 @@
           <div class="tl-p-label" style="color:#44dd88">Period 2</div>
           <div class="tl-p-range">7 – 12 months</div>
           <div class="tl-p-mult" style="color:#44dd88">2.25×</div>
-          <div class="tl-p-top">Top 5 count</div>
+          <div class="tl-p-top">Top 5 results</div>
         </div>
 
         <div class="tl-period tl-3">
@@ -775,7 +775,7 @@
           <div class="tl-p-label" style="color:#88cc88">Period 3</div>
           <div class="tl-p-range">13 – 18 months</div>
           <div class="tl-p-mult" style="color:#88cc88">1.20×</div>
-          <div class="tl-p-top">Top 4 count</div>
+          <div class="tl-p-top">Top 5 results</div>
         </div>
 
         <div class="tl-period tl-4">
@@ -783,7 +783,7 @@
           <div class="tl-p-label" style="color:#668866">Period 4</div>
           <div class="tl-p-range">19 – 24 months</div>
           <div class="tl-p-mult" style="color:#668866">0.60×</div>
-          <div class="tl-p-top">Top 4 count</div>
+          <div class="tl-p-top">Top 4 results</div>
         </div>
 
         <div class="tl-period tl-5">
@@ -791,7 +791,7 @@
           <div class="tl-p-label" style="color:var(--text3)">Period 5</div>
           <div class="tl-p-range">25 – 30 months</div>
           <div class="tl-p-mult" style="color:var(--text3)">0.25×</div>
-          <div class="tl-p-top">Top 4 count</div>
+          <div class="tl-p-top">Top 4 results</div>
         </div>
 
         <div class="tl-period tl-6">
@@ -799,7 +799,7 @@
           <div class="tl-p-label" style="color:var(--text3)">Period 6</div>
           <div class="tl-p-range">31 – 36 months</div>
           <div class="tl-p-mult" style="color:var(--text3)">0.25×</div>
-          <div class="tl-p-top">Top 4 count</div>
+          <div class="tl-p-top">Top 4 results</div>
         </div>
 
       </div>
@@ -822,7 +822,7 @@
 
         <div class="calc-field">
           <label>Field Size (participants)</label>
-          <input type="number" id="fieldSize" value="1200" min="32" max="500000" placeholder="e.g. 1200">
+          <input type="number" id="fieldSize" value="1200" min="100" max="500000" placeholder="e.g. 1200">
         </div>
 
         <div class="calc-field">
@@ -831,7 +831,7 @@
         </div>
 
         <div class="calc-field">
-          <label>Aging Period</label>
+          <label>Decay Period</label>
           <div class="select-wrap">
             <select id="periodSel">
               <option value="3.00">Period 1 — 0 to 6 months (3.00×)</option>
@@ -851,7 +851,7 @@
         <h3>Computed Score</h3>
 
         <div class="calc-step">
-          <span class="cs-label">Field Size (capped at 2,700)</span>
+          <span class="cs-label">Field Size (capped at 10,000)</span>
           <span class="cs-val" id="r-field">1,200</span>
         </div>
         <div class="calc-step">
@@ -863,7 +863,7 @@
           <span class="cs-val green" id="r-ff">2.778</span>
         </div>
         <div class="calc-step">
-          <span class="cs-label">Aging Factor</span>
+          <span class="cs-label">Decay Factor</span>
           <span class="cs-val orange" id="r-af">3.00×</span>
         </div>
 
@@ -924,14 +924,15 @@
       <div class="period-col pc-col-3">
         <div class="pc-header">
           <span class="pc-label">Period 3</span>
-          <span class="pc-sub">Best 4 of N</span>
+          <span class="pc-sub">Best 5 of N</span>
         </div>
         <div class="pc-results">
           <div class="pc-result selected">5.80</div>
           <div class="pc-result selected">5.41</div>
           <div class="pc-result selected">4.98</div>
           <div class="pc-result selected">4.55</div>
-          <div class="pc-result unselected">4.01</div>
+          <div class="pc-result selected">4.01</div>
+          <div class="pc-result unselected">3.62</div>
         </div>
       </div>
 
@@ -1039,7 +1040,7 @@
             </div>
             <div class="ex-val-item">
               <span class="ev-label">Cap</span>
-              <span class="ev-val">2,700</span>
+              <span class="ev-val">10,000</span>
             </div>
             <div class="ex-val-item">
               <span class="ev-label">Used Value</span>
@@ -1047,7 +1048,7 @@
             </div>
           </div>
           <div class="ex-formula-display">
-            1,200 is below the 2,700 cap &mdash; no adjustment needed.
+            1,200 is below the 10,000 cap &mdash; no adjustment needed.
           </div>
         </div>
       </div>
@@ -1067,7 +1068,7 @@
       <div class="ex-step">
         <div class="ex-num">4</div>
         <div class="ex-body">
-          <h3>Identify Aging Period &amp; Factor</h3>
+          <h3>Identify Decay Period &amp; Factor</h3>
           <div class="ex-values">
             <div class="ex-val-item">
               <span class="ev-label">Months Ago</span>
@@ -1078,7 +1079,7 @@
               <span class="ev-val">Period 1</span>
             </div>
             <div class="ex-val-item">
-              <span class="ev-label">Aging Factor</span>
+              <span class="ev-label">Decay Factor</span>
               <span class="ev-val orange">3.00×</span>
             </div>
           </div>
@@ -1132,8 +1133,8 @@
 
     errEl.style.display = 'none';
 
-    if (!rawField || isNaN(rawField) || rawField < 32) {
-      errEl.textContent = 'Field size must be at least 32.';
+    if (!rawField || isNaN(rawField) || rawField < 100) {
+      errEl.textContent = 'Field size must be at least 100.';
       errEl.style.display = 'block';
       return;
     }
@@ -1148,7 +1149,7 @@
       return;
     }
 
-    const cappedField = Math.min(rawField, 2700);
+    const cappedField = Math.min(rawField, 10000);
     const ff          = Math.log10(cappedField / pos);
     const score       = ff * af;
 
