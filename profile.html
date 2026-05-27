@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Runner Profile — Global Runner Index</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:      #07070f;
+      --bg2:     #0d0d1c;
+      --bg3:     #131326;
+      --card:    #0f0f20;
+      --card2:   #181832;
+      --border:  #1c1c38;
+      --border2: #272748;
+      --green:   #00e676;
+      --green2:  #00b44e;
+      --orange:  #ff6d35;
+      --red:     #ff3355;
+      --gold:    #ffd700;
+      --silver:  #c0c0c0;
+      --bronze:  #cd7f32;
+      --text:    #eeeeff;
+      --text2:   #8080a8;
+      --text3:   #444468;
+      --r:       10px;
+    }
+
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: 'Inter', system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* ── HEADER ─────────────────────────── */
+    header {
+      position: sticky; top: 0; z-index: 100;
+      height: 62px;
+      background: rgba(7,7,15,.92);
+      backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+      border-bottom: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 32px;
+    }
+    .hd-left { display: flex; align-items: center; gap: 12px; }
+    .logo-mark {
+      width: 34px; height: 34px; border-radius: 8px;
+      background: linear-gradient(135deg, var(--green), var(--green2));
+      display: flex; align-items: center; justify-content: center;
+      font-weight: 900; font-size: 12px; color: #000; text-decoration: none;
+    }
+    .hd-title { font-size: 15px; font-weight: 700; }
+    .hd-nav { display: flex; align-items: center; gap: 4px; }
+    .hd-link {
+      font-size: 13px; color: var(--text2); text-decoration: none;
+      padding: 6px 12px; border-radius: 7px; transition: color .15s, background .15s;
+    }
+    .hd-link:hover { color: var(--text); background: var(--bg3); }
+    .hd-link.active { color: var(--green); }
+    .submit-cta {
+      font-family: inherit; font-size: 13px; font-weight: 700;
+      padding: 7px 16px; border-radius: 8px;
+      background: var(--green); color: #000; border: none; cursor: pointer;
+      transition: background .15s;
+    }
+    .submit-cta:hover { background: #22ff88; }
+
+    /* ── BREADCRUMB ─────────────────────── */
+    .breadcrumb {
+      max-width: 1120px; margin: 0 auto;
+      padding: 18px 32px 0;
+      font-size: 13px; color: var(--text3);
+      display: flex; align-items: center; gap: 6px;
+    }
+    .breadcrumb a { color: var(--text2); text-decoration: none; }
+    .breadcrumb a:hover { color: var(--green); }
+
+    /* ── RUNNER HERO ────────────────────── */
+    .runner-hero {
+      max-width: 1120px; margin: 0 auto;
+      padding: 24px 32px 28px;
+      display: flex; align-items: flex-start; gap: 24px; flex-wrap: wrap;
+    }
+    .hero-flag {
+      font-size: 56px; line-height: 1; flex-shrink: 0;
+      filter: drop-shadow(0 0 12px rgba(0,230,118,.15));
+    }
+    .hero-info { flex: 1; min-width: 200px; }
+    .hero-name {
+      font-size: 32px; font-weight: 900; letter-spacing: -1px;
+      line-height: 1.1; margin-bottom: 8px;
+    }
+    .hero-meta {
+      display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
+    }
+    .hero-country { font-size: 14px; color: var(--text2); }
+    .badge {
+      display: inline-block; font-size: 10px; font-weight: 700; letter-spacing: .5px;
+      padding: 3px 8px; border-radius: 5px; text-transform: uppercase;
+    }
+    .bd-dist { background: var(--bg3); color: var(--text2); border: 1px solid var(--border2); }
+    .bd-m    { background: rgba(0,120,255,.12); color: #5599ff; border: 1px solid rgba(0,120,255,.2); }
+    .bd-w    { background: rgba(255,100,200,.12); color: #ff88cc; border: 1px solid rgba(255,100,200,.2); }
+
+    .trend {
+      display: inline-flex; align-items: center; gap: 2px;
+      font-size: 11px; font-weight: 700;
+      padding: 3px 9px; border-radius: 5px;
+    }
+    .tr-up { color: var(--green); background: rgba(0,230,118,.09); }
+    .tr-dn { color: #ff4455; background: rgba(255,68,85,.09); }
+    .tr-eq { color: var(--text3); }
+    .tr-nw { color: var(--orange); background: rgba(255,109,53,.11); border: 1px solid rgba(255,109,53,.2); }
+
+    .hero-stat-row {
+      display: flex; gap: 0; margin-top: 24px;
+      background: var(--card); border: 1px solid var(--border);
+      border-radius: var(--r); overflow: hidden;
+      align-self: flex-start; flex-shrink: 0;
+    }
+    .hstat {
+      padding: 16px 24px; text-align: center;
+      border-right: 1px solid var(--border);
+    }
+    .hstat:last-child { border-right: none; }
+    .hstat-val {
+      font-size: 22px; font-weight: 900; letter-spacing: -.5px;
+      display: block;
+    }
+    .hstat-val.green { color: var(--green); }
+    .hstat-label { font-size: 10px; color: var(--text3); text-transform: uppercase; letter-spacing: .7px; margin-top: 3px; }
+
+    /* ── CONTENT ────────────────────────── */
+    .content { max-width: 1120px; margin: 0 auto; padding: 0 32px 48px; }
+
+    .section-hd {
+      display: flex; align-items: baseline; justify-content: space-between;
+      margin-bottom: 14px;
+    }
+    .section-hd h2 { font-size: 16px; font-weight: 700; }
+    .section-hd p  { font-size: 12px; color: var(--text3); }
+
+    /* ── TABLE ──────────────────────────── */
+    .tshell { border: 1px solid var(--border); border-radius: var(--r); overflow: hidden; margin-bottom: 32px; }
+    table { width: 100%; border-collapse: collapse; }
+    thead { background: var(--bg3); border-bottom: 1px solid var(--border2); }
+    th {
+      padding: 10px 14px;
+      font-size: 11px; font-weight: 600; color: var(--text2);
+      text-transform: uppercase; letter-spacing: .8px; text-align: left;
+      white-space: nowrap;
+    }
+    th.tc { text-align: center; }
+    th.tr { text-align: right; }
+    tbody tr { border-bottom: 1px solid var(--border); transition: background .1s; }
+    tbody tr:last-child { border-bottom: none; }
+    tbody tr:hover { background: var(--card2); }
+    tbody tr.unselected { opacity: .45; }
+    td { padding: 13px 14px; font-size: 13px; vertical-align: middle; }
+    td.tc { text-align: center; }
+    td.tr { text-align: right; }
+
+    .period-badge {
+      display: inline-block; font-size: 10px; font-weight: 700;
+      padding: 3px 8px; border-radius: 5px; letter-spacing: .3px;
+      white-space: nowrap;
+    }
+    .p1 { color: #00e676; background: rgba(0,230,118,.1);  border: 1px solid rgba(0,230,118,.2); }
+    .p2 { color: #40c4ff; background: rgba(64,196,255,.1); border: 1px solid rgba(64,196,255,.2); }
+    .p3 { color: #b388ff; background: rgba(179,136,255,.1);border: 1px solid rgba(179,136,255,.2); }
+    .p4 { color: #ff6d35; background: rgba(255,109,53,.1); border: 1px solid rgba(255,109,53,.2); }
+    .p5 { color: #ff9100; background: rgba(255,145,0,.1);  border: 1px solid rgba(255,145,0,.2); }
+    .p6 { color: #8080a8; background: rgba(128,128,168,.1);border: 1px solid rgba(128,128,168,.2); }
+
+    .sel-badge {
+      font-size: 10px; font-weight: 700; padding: 2px 8px; border-radius: 4px;
+      text-transform: uppercase; letter-spacing: .4px;
+    }
+    .sel-yes { color: var(--green); background: rgba(0,230,118,.08); border: 1px solid rgba(0,230,118,.18); }
+    .sel-no  { color: var(--text3); background: transparent; border: 1px solid var(--border); }
+
+    .score-val { font-weight: 700; font-variant-numeric: tabular-nums; }
+    .score-top { color: var(--green); }
+
+    /* ── GRI TOTAL BAR ──────────────────── */
+    .gri-total-bar {
+      display: flex; align-items: center; justify-content: space-between;
+      background: var(--card); border: 1px solid var(--border2);
+      border-radius: var(--r); padding: 16px 20px; margin-bottom: 12px;
+    }
+    .gtb-label { font-size: 13px; color: var(--text2); }
+    .gtb-pts   { font-size: 22px; font-weight: 900; color: var(--green); letter-spacing: -.5px; }
+    .gtb-note  { font-size: 11px; color: var(--text3); margin-top: 2px; }
+
+    /* ── NOT FOUND ──────────────────────── */
+    .not-found {
+      max-width: 480px; margin: 80px auto; text-align: center; padding: 0 24px;
+    }
+    .not-found h2 { font-size: 22px; font-weight: 800; margin-bottom: 10px; }
+    .not-found p  { color: var(--text2); font-size: 14px; margin-bottom: 24px; }
+    .back-btn {
+      display: inline-block; padding: 10px 20px; border-radius: var(--r);
+      background: var(--green); color: #000; font-weight: 700; font-size: 14px;
+      text-decoration: none;
+    }
+
+    footer {
+      border-top: 1px solid var(--border);
+      padding: 20px 32px; text-align: center;
+      color: var(--text3); font-size: 12px;
+    }
+    footer a { color: var(--green); text-decoration: none; }
+    footer a:hover { text-decoration: underline; }
+
+    @media (max-width: 720px) {
+      header { padding: 0 16px; }
+      .breadcrumb { padding: 14px 16px 0; }
+      .runner-hero { padding: 16px 16px 20px; gap: 16px; }
+      .hero-name { font-size: 24px; }
+      .hero-flag { font-size: 40px; }
+      .hero-stat-row { width: 100%; }
+      .hstat { flex: 1; padding: 12px 10px; }
+      .content { padding: 0 16px 40px; }
+      .hide-sm { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="hd-left">
+    <a href="index.html" class="logo-mark">GRI</a>
+    <span class="hd-title">Global Runner Index</span>
+  </div>
+  <nav class="hd-nav">
+    <a href="index.html" class="hd-link active">Rankings</a>
+    <a href="formula.html" class="hd-link">Formula</a>
+  </nav>
+  <button class="submit-cta" onclick="window.location='index.html#submit'">Submit Result</button>
+</header>
+
+<div id="pageContent"></div>
+
+<footer>
+  &copy; 2026 Global Runner Index &nbsp;&middot;&nbsp;
+  <a href="formula.html">How GRI points are calculated</a>
+</footer>
+
+<script src="data.js"></script>
+<script>
+  const PERIOD_LABELS = [null, 'P1 · 30×', 'P2 · 22.5×', 'P3 · 12×', 'P4 · 6×', 'P5 · 2.5×', 'P6 · 2.5×'];
+  const PERIOD_RANGE  = [null, '0–6 mo', '7–12 mo', '13–18 mo', '19–24 mo', '25–30 mo', '31–36 mo'];
+
+  function esc(str) {
+    return String(str || '')
+      .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  }
+
+  function fmtDate(iso) {
+    const d = new Date(iso + 'T00:00:00');
+    return d.toLocaleDateString('en-GB', { day:'2-digit', month:'short', year:'numeric' });
+  }
+
+  function trendHtml(r) {
+    if (r.prevRank === null || r.prevRank === undefined) return `<span class="trend tr-nw">NEW</span>`;
+    const diff = r.prevRank - r.rank;
+    if (diff === 0) return `<span class="trend tr-eq">—</span>`;
+    if (diff > 0)   return `<span class="trend tr-up">↑ ${diff}</span>`;
+    return `<span class="trend tr-dn">↓ ${Math.abs(diff)}</span>`;
+  }
+
+  function render(runner) {
+    const scored = scoreResults(runner.results);
+    scored.sort((a, b) => new Date(b.date) - new Date(a.date));
+
+    const totalRaces  = scored.length;
+    const bestPos     = Math.min(...scored.map(r => r.position));
+    const bestOrdinal = bestPos === 1 ? '1st' : bestPos === 2 ? '2nd' : bestPos === 3 ? '3rd' : `${bestPos}th`;
+    const genderBadge = runner.gender === 'Men'
+      ? `<span class="badge bd-m">Men</span>`
+      : `<span class="badge bd-w">Women</span>`;
+
+    const rows = scored.map(r => {
+      const scoreCls = r.selected ? 'score-val score-top' : 'score-val';
+      return `
+        <tr class="${r.selected ? '' : 'unselected'}">
+          <td>${fmtDate(r.date)}</td>
+          <td><strong>${esc(r.raceName)}</strong></td>
+          <td class="hide-sm"><span class="badge bd-dist">${esc(r.distance)}</span></td>
+          <td class="tc">#${r.position} <span style="color:var(--text3);font-size:12px">of ${Number(r.fieldSize).toLocaleString()}</span></td>
+          <td class="tr"><span class="${scoreCls}">${r.score.toFixed(2)}</span></td>
+          <td class="tc hide-sm">
+            <span class="period-badge p${r.period}" title="${PERIOD_RANGE[r.period]}">${PERIOD_LABELS[r.period]}</span>
+          </td>
+          <td class="tc">
+            <span class="sel-badge ${r.selected ? 'sel-yes' : 'sel-no'}">${r.selected ? '✓ counts' : 'excluded'}</span>
+          </td>
+        </tr>`;
+    }).join('');
+
+    document.title = `${runner.name} — Global Runner Index`;
+    document.getElementById('pageContent').innerHTML = `
+      <!-- Breadcrumb -->
+      <div class="breadcrumb">
+        <a href="index.html">Rankings</a>
+        <span>/</span>
+        <span style="color:var(--text2)">${esc(runner.name)}</span>
+      </div>
+
+      <!-- Runner Hero -->
+      <div class="runner-hero">
+        <div class="hero-flag">${runner.flag}</div>
+        <div class="hero-info">
+          <h1 class="hero-name">${esc(runner.name)}</h1>
+          <div class="hero-meta">
+            <span class="hero-country">${esc(runner.country)}</span>
+            ${genderBadge}
+            <span class="badge bd-dist">${esc(runner.distance)}</span>
+            ${trendHtml(runner)}
+          </div>
+        </div>
+        <div class="hero-stat-row">
+          <div class="hstat">
+            <span class="hstat-val green">#${runner.rank}</span>
+            <div class="hstat-label">World Rank</div>
+          </div>
+          <div class="hstat">
+            <span class="hstat-val">${runner.pts.toLocaleString()}</span>
+            <div class="hstat-label">GRI Points</div>
+          </div>
+          <div class="hstat hide-sm">
+            <span class="hstat-val">${totalRaces}</span>
+            <div class="hstat-label">Races</div>
+          </div>
+          <div class="hstat hide-sm">
+            <span class="hstat-val">${bestOrdinal}</span>
+            <div class="hstat-label">Best Finish</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Race History -->
+      <div class="content">
+        <div class="section-hd">
+          <h2>Race History</h2>
+          <p>36-month rolling window &nbsp;·&nbsp; Updated weekly</p>
+        </div>
+        <div class="tshell">
+          <table>
+            <thead>
+              <tr>
+                <th>Date</th>
+                <th>Race</th>
+                <th class="hide-sm">Distance</th>
+                <th class="tc">Result</th>
+                <th class="tr">Event Score</th>
+                <th class="tc hide-sm">Period</th>
+                <th class="tc">Status</th>
+              </tr>
+            </thead>
+            <tbody>${rows}</tbody>
+          </table>
+        </div>
+        <div class="gri-total-bar">
+          <div>
+            <div class="gtb-label">Official GRI Points</div>
+            <div class="gtb-note">Based on all verified results within the 36-month window</div>
+          </div>
+          <div style="text-align:right">
+            <div class="gtb-pts">${runner.pts.toLocaleString()}</div>
+            <div class="gtb-note">Rank #${runner.rank} worldwide</div>
+          </div>
+        </div>
+      </div>
+    `;
+  }
+
+  function renderNotFound(slug) {
+    document.getElementById('pageContent').innerHTML = `
+      <div class="not-found">
+        <h2>Runner not found</h2>
+        <p>No profile found for "${esc(slug)}". They may not be in the current rankings.</p>
+        <a href="index.html" class="back-btn">← Back to Rankings</a>
+      </div>`;
+  }
+
+  const slug   = new URLSearchParams(location.search).get('runner');
+  const runner = DATA.find(r => r.slug === slug);
+  runner ? render(runner) : renderNotFound(slug || '');
+</script>
+</body>
+</html>
