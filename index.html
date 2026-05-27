@@ -783,6 +783,10 @@
           We&rsquo;ll follow up at your email if we need anything.
         </div>
         <button type="button" class="modal-submit" id="successClose">Close</button>
+        <button type="button" class="modal-submit" id="successAnother"
+          style="margin-top:8px;background:transparent;border:1px solid var(--border2);color:var(--text2)">
+          + Submit Another Race
+        </button>
       </div>
 
       <div class="modal-footer" id="modalFooter">
@@ -998,12 +1002,30 @@
   document.getElementById('closeModal').addEventListener('click', closeModal);
   document.getElementById('successClose').addEventListener('click', () => {
     closeModal();
-    // reset form for next use
     form.reset();
     resetUpload();
     success.style.display = 'none';
     form.querySelector('.modal-body').style.display = 'block';
     footer.style.display = 'flex';
+  });
+
+  document.getElementById('successAnother').addEventListener('click', () => {
+    const saved = {
+      runnerName: form.querySelector('[name=runnerName]').value,
+      gender:     form.querySelector('[name=gender]').value,
+      country:    form.querySelector('[name=country]').value,
+      email:      form.querySelector('[name=email]').value,
+    };
+    form.reset();
+    resetUpload();
+    form.querySelector('[name=runnerName]').value = saved.runnerName;
+    form.querySelector('[name=gender]').value     = saved.gender;
+    form.querySelector('[name=country]').value    = saved.country;
+    form.querySelector('[name=email]').value      = saved.email;
+    success.style.display = 'none';
+    form.querySelector('.modal-body').style.display = 'block';
+    footer.style.display = 'flex';
+    form.querySelector('[name=raceName]').focus();
   });
 
   overlay.addEventListener('click', e => { if (e.target === overlay) closeModal(); });
