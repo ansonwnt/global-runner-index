@@ -326,6 +326,29 @@
       background: transparent; color: var(--text3); border-color: var(--border);
     }
     .da-delete:hover { color: var(--red); border-color: rgba(255,51,85,.3); }
+    .da-edit {
+      background: rgba(255,109,53,.08); color: var(--orange); border-color: rgba(255,109,53,.25);
+    }
+    .da-edit:hover { background: rgba(255,109,53,.18); }
+    .da-secondary {
+      background: transparent; color: var(--text2); border-color: var(--border2);
+    }
+    .da-secondary:hover { color: var(--text); }
+
+    .df-input {
+      width: 100%; background: var(--bg3); border: 1px solid var(--border2);
+      color: var(--text); font-family: inherit; font-size: 14px;
+      padding: 8px 10px; border-radius: 7px; outline: none;
+      transition: border-color .2s;
+    }
+    .df-input:focus { border-color: var(--orange); }
+    .df-input-row { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+    .formula-tag {
+      display: inline-block; font-size: 9px; font-weight: 700; letter-spacing: .5px;
+      padding: 1px 6px; border-radius: 4px; text-transform: uppercase;
+      background: rgba(0,230,118,.1); color: var(--green); border: 1px solid rgba(0,230,118,.2);
+      margin-left: 6px; vertical-align: middle;
+    }
 
     footer {
       border-top: 1px solid var(--border);
@@ -645,6 +668,12 @@
   let currentDrawerId = null;
   const drawer = document.getElementById('drawer');
 
+  function proofHtml(s) {
+    return s.proofImageUrl
+      ? `<img class="drawer-proof" src="${esc(s.proofImageUrl)}" alt="Proof" onclick="openLightbox('${esc(s.proofImageUrl)}')">`
+      : '<p style="color:var(--text3);margin-bottom:16px;font-size:13px">No image uploaded.</p>';
+  }
+
   function openDrawer(id) {
     const s = submissions.find(x => x.id === id);
     if (!s) return;
@@ -652,9 +681,7 @@
 
     document.getElementById('drawerTitle').textContent = s.runnerName || 'Submission';
     document.getElementById('drawerBody').innerHTML = `
-      ${s.proofImageUrl
-        ? `<img class="drawer-proof" src="${esc(s.proofImageUrl)}" alt="Proof" onclick="openLightbox('${esc(s.proofImageUrl)}')">`
-        : '<p style="color:var(--text3);margin-bottom:16px;font-size:13px">No image uploaded.</p>'}
+      ${proofHtml(s)}
       <div class="drawer-field"><div class="df-label">Status</div><div class="df-val">${statusBadge(s.status)}</div></div>
       <hr class="drawer-divider">
       <div class="drawer-field"><div class="df-label">Runner Name</div><div class="df-val">${esc(s.runnerName)}</div></div>
@@ -674,11 +701,128 @@
       <div class="drawer-actions">
         ${s.status !== 'approved' ? `<button class="da-btn da-approve" onclick="setStatus('${s.id}','approved')">&#10003; Approve</button>` : ''}
         ${s.status !== 'rejected' ? `<button class="da-btn da-reject"  onclick="setStatus('${s.id}','rejected')">&#10007; Reject</button>`  : ''}
+        <button class="da-btn da-edit" onclick="openDrawerEdit('${s.id}')">&#9998; Edit</button>
         <button class="da-btn da-delete" onclick="deleteEntry('${s.id}')">Delete Submission</button>
       </div>
     `;
 
     drawer.classList.add('open');
+  }
+
+  function openDrawerEdit(id) {
+    const s = submissions.find(x => x.id === id);
+    if (!s) return;
+    currentDrawerId = id;
+
+    document.getElementById('drawerTitle').textContent = 'Edit Submission';
+    document.getElementById('drawerBody').innerHTML = `
+      ${proofHtml(s)}
+      <p style="font-size:12px;color:var(--text2);margin-bottom:16px">
+        Compare fields against the proof image and correct any typos. Fields marked
+        <span class="formula-tag">score</span> affect the GRI calculation.
+      </p>
+      <div class="drawer-field">
+        <div class="df-label">Runner Name</div>
+        <input class="df-input" id="e-runnerName" value="${esc(s.runnerName)}">
+      </div>
+      <div class="df-input-row" style="margin-bottom:14px">
+        <div>
+          <div class="df-label" style="margin-bottom:4px">Gender</div>
+          <select class="df-input" id="e-gender">
+            <option value="Men"   ${s.gender==='Men'   ? 'selected':''}>Men</option>
+            <option value="Women" ${s.gender==='Women' ? 'selected':''}>Women</option>
+          </select>
+        </div>
+        <div>
+          <div class="df-label" style="margin-bottom:4px">Country</div>
+          <input class="df-input" id="e-country" value="${esc(s.country)}">
+        </div>
+      </div>
+      <hr class="drawer-divider">
+      <div class="drawer-field">
+        <div class="df-label">Race Name</div>
+        <input class="df-input" id="e-raceName" value="${esc(s.raceName)}">
+      </div>
+      <div class="df-input-row" style="margin-bottom:14px">
+        <div>
+          <div class="df-label" style="margin-bottom:4px">Race Date <span class="formula-tag">score</span></div>
+          <input class="df-input" id="e-raceDate" type="date" value="${esc(s.raceDate)}">
+        </div>
+        <div>
+          <div class="df-label" style="margin-bottom:4px">Distance</div>
+          <select class="df-input" id="e-distance">
+            <option value="Marathon"      ${s.distance==='Marathon'      ? 'selected':''}>Marathon</option>
+            <option value="Half Marathon" ${s.distance==='Half Marathon' ? 'selected':''}>Half Marathon</option>
+            <option value="10K"           ${s.distance==='10K'           ? 'selected':''}>10K</option>
+            <option value="5K"            ${s.distance==='5K'            ? 'selected':''}>5K</option>
+            <option value="Ultra"         ${s.distance==='Ultra'         ? 'selected':''}>Ultra</option>
+          </select>
+        </div>
+      </div>
+      <div class="df-input-row" style="margin-bottom:14px">
+        <div>
+          <div class="df-label" style="margin-bottom:4px">Participants <span class="formula-tag">score</span></div>
+          <input class="df-input" id="e-participants" type="number" min="100" value="${esc(s.participants)}">
+        </div>
+        <div>
+          <div class="df-label" style="margin-bottom:4px">Finish Position <span class="formula-tag">score</span></div>
+          <input class="df-input" id="e-position" type="number" min="1" value="${esc(s.position)}">
+        </div>
+      </div>
+      <div class="drawer-field">
+        <div class="df-label">Results URL</div>
+        <input class="df-input" id="e-resultsUrl" type="url" value="${esc(s.resultsUrl || '')}">
+      </div>
+      <hr class="drawer-divider">
+      <div id="edit-err" style="display:none;color:var(--red);font-size:13px;margin-bottom:12px"></div>
+      <div class="drawer-actions">
+        <button class="da-btn da-approve" onclick="saveDrawerEdit('${s.id}', 'approved')">&#10003; Save &amp; Approve</button>
+        <button class="da-btn da-edit"    onclick="saveDrawerEdit('${s.id}', null)">Save Changes</button>
+        <button class="da-btn da-secondary" onclick="openDrawer('${s.id}')">Cancel</button>
+      </div>
+    `;
+
+    drawer.classList.add('open');
+  }
+
+  function saveDrawerEdit(id, newStatus) {
+    const s = submissions.find(x => x.id === id);
+    if (!s) return;
+
+    const participants = parseInt(document.getElementById('e-participants').value, 10);
+    const position     = parseInt(document.getElementById('e-position').value, 10);
+    const errEl        = document.getElementById('edit-err');
+
+    if (!participants || participants < 100) {
+      errEl.textContent = 'Participants must be at least 100.';
+      errEl.style.display = 'block';
+      return;
+    }
+    if (!position || position < 1) {
+      errEl.textContent = 'Finish position must be at least 1.';
+      errEl.style.display = 'block';
+      return;
+    }
+    if (position > participants) {
+      errEl.textContent = 'Finish position cannot exceed number of participants.';
+      errEl.style.display = 'block';
+      return;
+    }
+
+    s.runnerName  = document.getElementById('e-runnerName').value.trim();
+    s.gender      = document.getElementById('e-gender').value;
+    s.country     = document.getElementById('e-country').value.trim();
+    s.raceName    = document.getElementById('e-raceName').value.trim();
+    s.raceDate    = document.getElementById('e-raceDate').value;
+    s.distance    = document.getElementById('e-distance').value;
+    s.participants = participants;
+    s.position    = position;
+    s.resultsUrl  = document.getElementById('e-resultsUrl').value.trim();
+
+    if (newStatus) s.status = newStatus;
+
+    saveData();
+    openDrawer(id);
   }
 
   function closeDrawer() {

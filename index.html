@@ -297,6 +297,19 @@
 
     .no-rows td { text-align: center; padding: 60px; color: var(--text2); }
 
+    /* ── LAST UPDATED BAR ───────────────── */
+    .last-updated {
+      display: flex; align-items: center; justify-content: flex-end; gap: 6px;
+      padding: 0 2px 10px;
+      font-size: 11px; color: var(--text3);
+    }
+    .last-updated .lu-dot {
+      width: 6px; height: 6px; border-radius: 50%;
+      background: var(--green); flex-shrink: 0;
+      box-shadow: 0 0 5px var(--green);
+    }
+    .last-updated strong { color: var(--text2); font-weight: 600; }
+
     /* ── FOOTER ─────────────────────────── */
     footer {
       border-top: 1px solid var(--border);
@@ -617,6 +630,10 @@
 
 <!-- ── RANKINGS TABLE ──────────────────────────────── -->
 <div class="rankings">
+  <div class="last-updated">
+    <span class="lu-dot"></span>
+    Updated weekly &nbsp;&bull;&nbsp; <strong id="lastUpdatedVal">—</strong>
+  </div>
   <div class="tshell">
     <table>
       <thead>
@@ -788,32 +805,34 @@
 </footer>
 
 <script>
+  const LAST_UPDATED = '2026-05-26T09:00:00';
+
   const DATA = [
-    { rank:1,  name:'Kenji Nakamura',       country:'Japan',       flag:'🇯🇵', distance:'Marathon',     gender:'Men',   pts:1382, trend:'+2'  },
-    { rank:2,  name:'Ji-ho Kim',            country:'Korea',       flag:'🇰🇷', distance:'10K',          gender:'Men',   pts:1344, trend:'0'   },
-    { rank:3,  name:'Emma Clarke',          country:'UK',          flag:'🇬🇧', distance:'Half Marathon', gender:'Women', pts:1298, trend:'-1'  },
-    { rank:4,  name:'Wei Zhang',            country:'China',       flag:'🇨🇳', distance:'Marathon',     gender:'Women', pts:1251, trend:'+3'  },
-    { rank:5,  name:'Antoine Rousseau',     country:'France',      flag:'🇫🇷', distance:'10K',          gender:'Men',   pts:1214, trend:'0'   },
-    { rank:6,  name:'Seo-yeon Lee',         country:'Korea',       flag:'🇰🇷', distance:'5K',           gender:'Women', pts:1178, trend:'+1'  },
-    { rank:7,  name:'Chen Wei-ting',        country:'Taiwan',      flag:'🇹🇼', distance:'Half Marathon', gender:'Men',   pts:1135, trend:'NEW' },
-    { rank:8,  name:'Lukas Bauer',          country:'Germany',     flag:'🇩🇪', distance:'Marathon',     gender:'Men',   pts:1092, trend:'-2'  },
-    { rank:9,  name:'Mei Fujiwara',         country:'Japan',       flag:'🇯🇵', distance:'10K',          gender:'Women', pts:1048, trend:'+1'  },
-    { rank:10, name:'Chan Kai-lok',         country:'Hong Kong',   flag:'🇭🇰', distance:'Marathon',     gender:'Men',   pts:1011, trend:'-1'  },
-    { rank:11, name:'Camille Lefevre',      country:'France',      flag:'🇫🇷', distance:'Half Marathon', gender:'Women', pts:968,  trend:'+2'  },
-    { rank:12, name:'Ahmad Razif',          country:'Malaysia',    flag:'🇲🇾', distance:'5K',           gender:'Men',   pts:934,  trend:'0'   },
-    { rank:13, name:'Hannah Müller',        country:'Germany',     flag:'🇩🇪', distance:'Marathon',     gender:'Women', pts:897,  trend:'+4'  },
-    { rank:14, name:'Supachai Thongsuk',    country:'Thailand',    flag:'🇹🇭', distance:'10K',          gender:'Men',   pts:861,  trend:'-1'  },
-    { rank:15, name:'Lin Mei-ling',         country:'Taiwan',      flag:'🇹🇼', distance:'5K',           gender:'Women', pts:824,  trend:'+1'  },
-    { rank:16, name:'Oliver Hughes',        country:'UK',          flag:'🇬🇧', distance:'Marathon',     gender:'Men',   pts:789,  trend:'-3'  },
-    { rank:17, name:'Mohd Hafiz Zainal',    country:'Malaysia',    flag:'🇲🇾', distance:'Half Marathon', gender:'Men',   pts:754,  trend:'0'   },
-    { rank:18, name:'Nattaya Charoenwong',  country:'Thailand',    flag:'🇹🇭', distance:'Half Marathon', gender:'Women', pts:718,  trend:'+2'  },
-    { rank:19, name:'Lars Eriksson',        country:'Sweden',      flag:'🇸🇪', distance:'Ultra',        gender:'Men',   pts:681,  trend:'0'   },
-    { rank:20, name:'Daisuke Mori',         country:'Japan',       flag:'🇯🇵', distance:'Marathon',     gender:'Men',   pts:645,  trend:'+1'  },
-    { rank:21, name:'Fang Liu',             country:'China',       flag:'🇨🇳', distance:'10K',          gender:'Women', pts:609,  trend:'NEW' },
-    { rank:22, name:'Min-jun Park',         country:'Korea',       flag:'🇰🇷', distance:'5K',           gender:'Men',   pts:572,  trend:'-2'  },
-    { rank:23, name:'Wong Siu-ming',        country:'Hong Kong',   flag:'🇭🇰', distance:'Marathon',     gender:'Men',   pts:538,  trend:'0'   },
-    { rank:24, name:'Giulia Ferrari',       country:'Italy',       flag:'🇮🇹', distance:'Marathon',     gender:'Women', pts:501,  trend:'+3'  },
-    { rank:25, name:'Lee Pui-yan',          country:'Hong Kong',   flag:'🇭🇰', distance:'Ultra',        gender:'Women', pts:464,  trend:'-1'  },
+    { rank:1,  name:'Kenji Nakamura',       country:'Japan',       flag:'🇯🇵', distance:'Marathon',     gender:'Men',   pts:1382, prevRank:3   },
+    { rank:2,  name:'Ji-ho Kim',            country:'Korea',       flag:'🇰🇷', distance:'10K',          gender:'Men',   pts:1344, prevRank:2   },
+    { rank:3,  name:'Emma Clarke',          country:'UK',          flag:'🇬🇧', distance:'Half Marathon', gender:'Women', pts:1298, prevRank:4   },
+    { rank:4,  name:'Wei Zhang',            country:'China',       flag:'🇨🇳', distance:'Marathon',     gender:'Women', pts:1251, prevRank:1   },
+    { rank:5,  name:'Antoine Rousseau',     country:'France',      flag:'🇫🇷', distance:'10K',          gender:'Men',   pts:1214, prevRank:5   },
+    { rank:6,  name:'Seo-yeon Lee',         country:'Korea',       flag:'🇰🇷', distance:'5K',           gender:'Women', pts:1178, prevRank:7   },
+    { rank:7,  name:'Chen Wei-ting',        country:'Taiwan',      flag:'🇹🇼', distance:'Half Marathon', gender:'Men',   pts:1135, prevRank:null },
+    { rank:8,  name:'Lukas Bauer',          country:'Germany',     flag:'🇩🇪', distance:'Marathon',     gender:'Men',   pts:1092, prevRank:6   },
+    { rank:9,  name:'Mei Fujiwara',         country:'Japan',       flag:'🇯🇵', distance:'10K',          gender:'Women', pts:1048, prevRank:10  },
+    { rank:10, name:'Chan Kai-lok',         country:'Hong Kong',   flag:'🇭🇰', distance:'Marathon',     gender:'Men',   pts:1011, prevRank:11  },
+    { rank:11, name:'Camille Lefevre',      country:'France',      flag:'🇫🇷', distance:'Half Marathon', gender:'Women', pts:968,  prevRank:9   },
+    { rank:12, name:'Ahmad Razif',          country:'Malaysia',    flag:'🇲🇾', distance:'5K',           gender:'Men',   pts:934,  prevRank:12  },
+    { rank:13, name:'Hannah Müller',        country:'Germany',     flag:'🇩🇪', distance:'Marathon',     gender:'Women', pts:897,  prevRank:8   },
+    { rank:14, name:'Supachai Thongsuk',    country:'Thailand',    flag:'🇹🇭', distance:'10K',          gender:'Men',   pts:861,  prevRank:15  },
+    { rank:15, name:'Lin Mei-ling',         country:'Taiwan',      flag:'🇹🇼', distance:'5K',           gender:'Women', pts:824,  prevRank:14  },
+    { rank:16, name:'Oliver Hughes',        country:'UK',          flag:'🇬🇧', distance:'Marathon',     gender:'Men',   pts:789,  prevRank:19  },
+    { rank:17, name:'Mohd Hafiz Zainal',    country:'Malaysia',    flag:'🇲🇾', distance:'Half Marathon', gender:'Men',   pts:754,  prevRank:17  },
+    { rank:18, name:'Nattaya Charoenwong',  country:'Thailand',    flag:'🇹🇭', distance:'Half Marathon', gender:'Women', pts:718,  prevRank:16  },
+    { rank:19, name:'Lars Eriksson',        country:'Sweden',      flag:'🇸🇪', distance:'Ultra',        gender:'Men',   pts:681,  prevRank:19  },
+    { rank:20, name:'Daisuke Mori',         country:'Japan',       flag:'🇯🇵', distance:'Marathon',     gender:'Men',   pts:645,  prevRank:19  },
+    { rank:21, name:'Fang Liu',             country:'China',       flag:'🇨🇳', distance:'10K',          gender:'Women', pts:609,  prevRank:null },
+    { rank:22, name:'Min-jun Park',         country:'Korea',       flag:'🇰🇷', distance:'5K',           gender:'Men',   pts:572,  prevRank:24  },
+    { rank:23, name:'Wong Siu-ming',        country:'Hong Kong',   flag:'🇭🇰', distance:'Marathon',     gender:'Men',   pts:538,  prevRank:23  },
+    { rank:24, name:'Giulia Ferrari',       country:'Italy',       flag:'🇮🇹', distance:'Marathon',     gender:'Women', pts:501,  prevRank:21  },
+    { rank:25, name:'Lee Pui-yan',          country:'Hong Kong',   flag:'🇭🇰', distance:'Ultra',        gender:'Women', pts:464,  prevRank:26  },
   ];
 
   let distF = 'all', genF = 'all', query = '';
@@ -839,12 +858,21 @@
     `).join('');
   }
 
+  /* ── Last Updated ── */
+  (function() {
+    const d = new Date(LAST_UPDATED);
+    const date = d.toLocaleDateString('en-GB', { day:'2-digit', month:'short', year:'numeric' });
+    const time = d.toLocaleTimeString('en-GB', { hour:'2-digit', minute:'2-digit' });
+    document.getElementById('lastUpdatedVal').textContent = `${date}, ${time}`;
+  })();
+
   /* ── Trend HTML ── */
-  function trendHtml(t) {
-    if (t === 'NEW') return `<span class="trend tr-nw">NEW</span>`;
-    if (t === '0')   return `<span class="trend tr-eq">&#8212;</span>`;
-    if (t[0] === '+') return `<span class="trend tr-up">&#8593; ${t.slice(1)}</span>`;
-    return `<span class="trend tr-dn">&#8595; ${t.slice(1)}</span>`;
+  function trendHtml(r) {
+    if (r.prevRank === null || r.prevRank === undefined) return `<span class="trend tr-nw">NEW</span>`;
+    const diff = r.prevRank - r.rank;
+    if (diff === 0) return `<span class="trend tr-eq">&#8212;</span>`;
+    if (diff > 0)   return `<span class="trend tr-up">&#8593; ${diff}</span>`;
+    return `<span class="trend tr-dn">&#8595; ${Math.abs(diff)}</span>`;
   }
 
   /* ── Table ── */
@@ -887,7 +915,7 @@
             </div>
           </td>
           <td class="pts-cell"><span class="${ptsCls}">${r.pts.toLocaleString()}</span></td>
-          <td class="tr-cell">${trendHtml(r.trend)}</td>
+          <td class="tr-cell">${trendHtml(r)}</td>
         </tr>`;
     }).join('');
   }
