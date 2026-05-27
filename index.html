@@ -182,6 +182,18 @@
     }
     .search-box input::placeholder { color: var(--text3); }
 
+    .filter-select {
+      background: var(--card); border: 1px solid var(--border2);
+      color: var(--text2); font-family: inherit; font-size: 13px; font-weight: 500;
+      padding: 7px 30px 7px 12px; border-radius: var(--r); outline: none; cursor: pointer;
+      appearance: none; -webkit-appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%238080a8' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+      background-repeat: no-repeat; background-position: right 10px center;
+      transition: border-color .2s, color .2s;
+    }
+    .filter-select:focus, .filter-select:hover { border-color: var(--green); color: var(--text); }
+    .filter-select option { background: var(--bg3); }
+
     .fgroup {
       display: flex; gap: 2px;
       background: var(--card); border: 1px solid var(--border2);
@@ -624,6 +636,8 @@
     <button class="fbtn" data-v="Men">Men</button>
     <button class="fbtn" data-v="Women">Women</button>
   </div>
+
+  <select class="filter-select" id="countryF"></select>
 </div>
 
 <div class="results-meta" id="resultsMeta"></div>
@@ -839,7 +853,7 @@
     { rank:25, name:'Lee Pui-yan',          country:'Hong Kong',   flag:'🇭🇰', distance:'Ultra',        gender:'Women', pts:464,  prevRank:26  },
   ];
 
-  let distF = 'all', genF = 'all', query = '';
+  let distF = 'all', genF = 'all', countryF = 'all', query = '';
 
   /* ── Podium ── */
   function renderPodium() {
@@ -890,8 +904,9 @@
     const q = query.toLowerCase();
     const filtered = DATA.filter(r =>
       (!q || r.name.toLowerCase().includes(q)) &&
-      (distF === 'all' || r.distance === distF) &&
-      (genF  === 'all' || r.gender  === genF)
+      (distF    === 'all' || r.distance === distF) &&
+      (genF     === 'all' || r.gender   === genF) &&
+      (countryF === 'all' || r.country  === countryF)
     );
 
     const meta = document.getElementById('resultsMeta');
@@ -953,6 +968,18 @@
     query = e.target.value;
     renderTable();
   });
+
+  /* ── Country dropdown — populated from DATA ── */
+  (function() {
+    const countries = [...new Set(DATA.map(r => r.country))].sort();
+    const sel = document.getElementById('countryF');
+    sel.innerHTML = `<option value="all">All Countries</option>` +
+      countries.map(c => `<option value="${c}">${DATA.find(r=>r.country===c).flag} ${c}</option>`).join('');
+    sel.addEventListener('change', () => {
+      countryF = sel.value;
+      renderTable();
+    });
+  })();
 
   renderPodium();
   renderTable();
